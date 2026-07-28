@@ -1,0 +1,63 @@
+name: Refresh MLB Edge Dashboard
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run daily pipeline
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python run_daily.py
+
+      # report.json / predictions_log.jsonl / odds_history.jsonl are the
+      # durable state that makes track record + line movement work across
+      # scheduled runs - each run starts from a fresh checkout, so without
+      # committing these back, every run would look like the first run of
+      # the day. dashboard.html is *not* committed - it's build output,
+      # deployed straight to Pages below.
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add report.json predictions_log.jsonl odds_history.jsonl
+          git diff --cached --quiet || git commit -m "Refresh data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
+
+      - name: Prepare Pages output
+        run: |
+          mkdir -p _site
+          cp dashboard.html _site/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
