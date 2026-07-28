@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2026-07-26",
+    "summary": "v1 - initial model: season Pythagorean expectation + log5 head-to-head + a flat +4pt home-field boost.",
+    "why": "Baseline sabermetric approach - simple, well-established, and verifiable before adding anything fancier."
+  },
+  {
+    "date": "2026-07-27",
+    "summary": "v2 - added starter FIP + bullpen ERA + park factors; probability now projects game-specific runs instead of using season totals only. Also added line-movement tracking and the prediction-logging/backtesting infrastructure.",
+    "why": "Season-aggregate alone ignores who's actually pitching today - the single biggest known blind spot. Also needed a way to check whether the model's stated probabilities are actually calibrated, not just plausible."
+  },
+  {
+    "date": "2026-07-27",
+    "summary": "v3 - reworked the odds display: real sportsbook moneyline next to the model's fair (no-vig) price, collapsed the mirrored home/away edge into one 'Model likes' column, added projected run differential.",
+    "why": "The old win%-only display read like two separate findings instead of one and was confusing to scan."
+  },
+  {
+    "date": "2026-07-27",
+    "summary": "v4 - added compute_track_record(): win/loss record for resolved picks, bucketed by how big the edge was (10+ / 5-10 / 0-5 pts).",
+    "why": "Needed a way to see whether the model's biggest disagreements with the market are actually the more reliable ones, not just louder."
+  },
+  {
+    "date": "2026-07-27",
+    "summary": "v5 - added per-game 'Why this prediction?' write-up, and started fetching each team's last-10 record / streak (recent form) for that write-up.",
+    "why": "Raw numbers alone don't explain themselves - wanted the reasoning spelled out in plain sentences. Recent form was pulled in for the prose but was never wired into the probability calculation itself."
+  },
+  {
+    "date": "2026-07-27",
+    "summary": "v6/v7 - two visual redesign passes (design-system palette pass, then the 'ledger under the lights' box-score aesthetic).",
+    "why": "Cosmetic only - no change to model math or picks."
+  },
+  {
+    "date": "2026-07-28",
+    "summary": "v8 - extended prediction logging to capture starter FIP, bullpen ERA, park factor, projected runs, recent form, and a model-version tag per pick. Added this Analysis tab: changelog, pick-by-pick postmortems (why a pick missed, or whether it was just normal variance), pattern detection, and a running list of accuracy-improvement ideas.",
+    "why": "First day's reconciled record (1-4) included a 19-point model/market gap (Cubs @ Cardinals game) that turned out to be undiagnosable after the fact - report.json wasn't persisted and predictions_log.jsonl only kept the bare probabilities, not the inputs that produced them. This closes that gap going forward."
+  }
+]

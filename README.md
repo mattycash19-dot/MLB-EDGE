@@ -136,6 +136,19 @@ anything** — that's a few weeks of daily runs, not something to expect on
 day one. Don't trust the model's edge numbers with real money before
 checking this.
 
+**Analysis tab (dashboard.html):** alongside today's slate, the dashboard has an
+"Analysis" tab with three things: a running changelog of what changed in the
+model and why (`model_changelog.json`), a pick-by-pick postmortem for every
+resolved graded pick (correct picks get a one-liner; misses get a best-effort
+read on whether something specific pointed the wrong way — an unusually large
+market disagreement, recent form the model doesn't use, or just a thin edge —
+versus "no clear factor, ordinary variance"), and a running list of
+accuracy-improvement ideas not yet implemented. `backtest.log_predictions()`
+now also saves each pick's starter FIP, bullpen ERA, park factor, projected
+runs, and recent form alongside the probabilities, specifically so a future
+surprising result (like the 19-point Cardinals gap on 2026-07-27, which
+couldn't be diagnosed after the fact) has something to actually check.
+
 ## Files
 
 - `mlb_data.py` — free MLB schedule/stats fetcher (no key needed)
@@ -146,7 +159,8 @@ checking this.
 - `model.py` — all the probability/edge math
 - `build_report.py` — orchestrates the above into `report.json`
 - `dashboard.py` — renders `report.json` into `dashboard.html`
-- `backtest.py` — logs predictions, reconciles against results, checks calibration
+- `backtest.py` — logs predictions, reconciles against results, checks calibration, generates postmortems
+- `model_changelog.json` — dated log of model/code changes, shown on the dashboard's Analysis tab
 - `run_daily.py` — the script you actually run
 
 ## Verified live (2026-07-27 slate, real API key)

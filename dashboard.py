@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import backtest
 
 OUT_DIR = os.path.dirname(__file__)
+CHANGELOG_PATH = os.path.join(OUT_DIR, "model_changelog.json")
 
 # (abbr, background hex, text hex) per team, for the small color-monogram
 # badge next to each team name — real logo artwork isn't pulled in since
@@ -364,6 +365,100 @@ def _row(g, is_top=False):
     """
 
 
+def _load_changelog():
+    try:
+        with open(CHANGELOG_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def _changelog_html():
+    entries = sorted(_load_changelog(), key=lambda e: e.get("date", ""), reverse=True)
+    if not entries:
+        return '<p class="an-empty">No changelog entries yet.</p>'
+    rows = "".join(f"""
+      <div class="chlog-entry">
+        <div class="chlog-date">{e.get('date', '')}</div>
+        <div class="chlog-body">
+          <div class="chlog-summary">{e.get('summary', '')}</div>
+          <div class="chlog-why"><span class="chlog-why-label">Why:</span> {e.get('why', '')}</div>
+        </div>
+      </div>
+    """ for e in entries)
+    return f'<div class="chlog">{rows}</div>'
+
+
+def _patterns_html():
+    try:
+        notes = backtest.detect_patterns()
+    except Exception:
+        notes = []
+    if not notes:
+        return ""
+    items = "".join(f"<li>{n}</li>" for n in notes)
+    return f'<div class="patterns"><div class="an-subhead">Patterns worth watching</div><ul>{items}</ul></div>'
+
+
+def _postmortems_html():
+    try:
+        posts = backtest.generate_postmortems()
+    except Exception as e:
+        return f'<p class="an-empty">Postmortems unavailable: {e}</p>'
+    if not posts:
+        return ('<p class="an-empty">No resolved, graded picks yet — check back once today\'s '
+                'games are final and a later run has reconciled them.</p>')
+    rows = "".join(f"""
+      <div class="pm-row {'pm-correct' if p['correct'] else 'pm-incorrect'}">
+        <div class="pm-head">
+          <span class="pm-date">{p['date']}</span>
+          <span class="pm-matchup">{p['matchup']}</span>
+          <span class="pm-mark">{'correct' if p['correct'] else 'incorrect'}</span>
+        </div>
+        <div class="pm-pick">Picked <b>{p['picked_team']}</b>{f" ({p['edge_pts']} pt edge)" if p.get('edge_pts') is not None else ''}</div>
+        <div class="pm-explain">{p['explanation']}</div>
+      </div>
+    """ for p in posts)
+    return f'<div class="postmortems">{rows}</div>'
+
+
+def _improvements_html():
+    items = "".join(f"""
+      <div class="idea">
+        <div class="idea-what">{i['idea']}</div>
+        <div class="idea-why"><span class="chlog-why-label">Why:</span> {i['why']}</div>
+      </div>
+    """ for i in backtest.FUTURE_ADJUSTMENTS)
+    return f'<div class="ideas">{items}</div>'
+
+
+def _analysis_tab_html():
+    return f"""
+    <div class="an-section">
+      <div class="legend-title">What changed, and when</div>
+      <p class="an-note">A running log of adjustments made to the model itself — use this to
+      line up a shift in the track record with the change that might have caused it.</p>
+      {_changelog_html()}
+    </div>
+
+    <div class="an-section">
+      <div class="legend-title">Pick by pick: what happened, and why</div>
+      <p class="an-note">Every graded pick once its game is final — correct or not, and for
+      misses, a best-effort read on whether something specific pointed the wrong way or it
+      was just normal variance (any team can beat any team on a given day).</p>
+      {_patterns_html()}
+      {_postmortems_html()}
+    </div>
+
+    <div class="an-section">
+      <div class="legend-title">Ideas for improving pick accuracy</div>
+      <p class="an-note">Not yet implemented — candidates worth trying once there's enough
+      resolved history to tell whether they'd actually help.</p>
+      {_improvements_html()}
+    </div>
+    """
+
+
 def render(report, out_path=None):
     out_path = out_path or os.path.join(OUT_DIR, "dashboard.html")
 
@@ -492,6 +587,79 @@ def render(report, out_path=None):
   }}
   .banner a {{ color: var(--accent); }}
   .banner code {{ font-family: var(--font-data); }}
+
+  /* ---------- tabs ---------- */
+  .tab-input {{ position: absolute; opacity: 0; pointer-events: none; }}
+  .tab-panel {{ display: none; }}
+  #tab-today:checked ~ .panel-today {{ display: block; }}
+  #tab-analysis:checked ~ .panel-analysis {{ display: block; }}
+  .tabnav {{
+    display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border);
+  }}
+  .tab-label {{
+    cursor: pointer; padding: 10px 18px; font-family: var(--font-label); font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 150ms ease;
+  }}
+  .tab-label:hover {{ color: var(--text); }}
+  #tab-today:checked ~ .tabnav label[for="tab-today"],
+  #tab-analysis:checked ~ .tabnav label[for="tab-analysis"] {{
+    color: var(--text); border-bottom-color: var(--accent);
+  }}
+  .tab-input:focus-visible ~ .tabnav label {{ outline: 2px solid var(--ring); outline-offset: 2px; }}
+
+  /* ---------- analysis tab ---------- */
+  .an-section {{ margin-bottom: var(--sp-7); }}
+  .an-note {{ font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 70ch; margin: 6px 0 18px; }}
+  .an-subhead {{
+    font-family: var(--font-label); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent); font-weight: 600; margin-bottom: 8px;
+  }}
+  .an-empty {{ color: var(--muted); font-size: 13px; }}
+
+  .patterns {{
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px;
+  }}
+  .patterns ul {{ margin: 0; padding-left: 18px; }}
+  .patterns li {{ font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 6px; }}
+
+  .chlog-entry {{
+    display: flex; gap: 18px; padding: 14px 0; border-top: 1px solid var(--border);
+  }}
+  .chlog-entry:first-child {{ border-top: none; }}
+  .chlog-date {{
+    flex: none; width: 90px; font-family: var(--font-data); font-size: 12px; color: var(--muted);
+    padding-top: 2px;
+  }}
+  .chlog-summary {{ font-size: 13.5px; line-height: 1.6; color: var(--text); }}
+  .chlog-why {{ font-size: 12.5px; line-height: 1.6; color: var(--muted); margin-top: 5px; }}
+  .chlog-why-label {{ color: var(--accent); font-weight: 600; }}
+
+  .pm-row {{
+    background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--border);
+    border-radius: 6px; padding: 12px 16px; margin-bottom: 10px;
+  }}
+  .pm-row.pm-correct {{ border-left-color: rgba(var(--pos-rgb), 0.7); }}
+  .pm-row.pm-incorrect {{ border-left-color: rgba(var(--neg-rgb), 0.7); }}
+  .pm-head {{ display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
+  .pm-date {{ font-family: var(--font-data); font-size: 11.5px; color: var(--muted); }}
+  .pm-matchup {{ font-family: var(--font-display); font-size: 14px; color: var(--text); flex: 1 1 auto; }}
+  .pm-mark {{
+    font-family: var(--font-label); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 700;
+  }}
+  .pm-row.pm-correct .pm-mark {{ color: var(--pos); }}
+  .pm-row.pm-incorrect .pm-mark {{ color: var(--neg); }}
+  .pm-pick {{ font-size: 12.5px; color: var(--muted); margin-top: 6px; }}
+  .pm-explain {{ font-size: 13px; line-height: 1.6; color: var(--text); margin-top: 6px; max-width: 76ch; }}
+
+  .idea {{
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px 16px; margin-bottom: 10px;
+  }}
+  .idea-what {{ font-size: 13.5px; color: var(--text); font-weight: 600; }}
+  .idea-why {{ font-size: 12.5px; line-height: 1.6; color: var(--muted); margin-top: 5px; }}
 
   /* ---------- track record ---------- */
   .track {{
@@ -707,37 +875,52 @@ def render(report, out_path=None):
       <div class="meta">{report['date']} <span class="dot">·</span> generated {report['generated_at']} <span class="dot">·</span> sorted by edge size</div>
     </div>
 
-    {_track_record_html()}
-    {banner}
-
-    <div class="slate-head">
-      <div class="slate-label">Today's slate</div>
-      <div class="slate-count">{len(games)} game{'s' if len(games) != 1 else ''}</div>
+    <input type="radio" name="tabs" id="tab-today" class="tab-input" checked>
+    <input type="radio" name="tabs" id="tab-analysis" class="tab-input">
+    <div class="tabnav">
+      <label for="tab-today" class="tab-label">Today's Slate</label>
+      <label for="tab-analysis" class="tab-label">Analysis</label>
     </div>
 
-    <div class="games-scroll">
-      <div class="games">
-        {rows}
+    <div class="tab-panel panel-today">
+
+      {_track_record_html()}
+      {banner}
+
+      <div class="slate-head">
+        <div class="slate-label">Today's slate</div>
+        <div class="slate-count">{len(games)} game{'s' if len(games) != 1 else ''}</div>
       </div>
+
+      <div class="games-scroll">
+        <div class="games">
+          {rows}
+        </div>
+      </div>
+
+      {finished_section}
+
+      <div class="legend">
+        <div class="legend-title">How to read this</div>
+        <dl class="legend-list">
+          <dt>Sportsbook odds</dt>
+          <dd>The actual moneyline you'd see at a book — each side's price averaged across every bookmaker tracked, vig included. A real, bettable price, not a theoretical one.</dd>
+          <dt>Model odds</dt>
+          <dd>The model's win probability for this specific game (season offense blended with today's starter FIP + bullpen ERA, park-adjusted, Pythagorean expectation + home field) converted to the same +150/−130 format, with no vig. Win% shown underneath for reference.</dd>
+          <dt>Model likes</dt>
+          <dd>Whichever team's model odds are more favorable than the sportsbook's price, and by how many points of win probability — the one number that matters if you're scanning for value.</dd>
+          <dt>Proj. run diff</dt>
+          <dd>Today's game-specific projected run differential — not season run differential (see each team's record above for that) — given today's park and pitching matchups.</dd>
+          <dt>Line move</dt>
+          <dd>Each side's price the first time this tool logged odds today ("opened") versus right now, plus the net shift in home-team win probability. Needs at least two runs today to show anything - a self-collected proxy, not a paid "sharp money" feed.</dd>
+        </dl>
+        <p class="disclaimer">This is a probability/edge estimate for research purposes, not a guarantee — treat it as one input, not an answer. Starting pitcher FIP is season-to-date, not adjusted for the specific matchup or recent form.</p>
+      </div>
+
     </div>
 
-    {finished_section}
-
-    <div class="legend">
-      <div class="legend-title">How to read this</div>
-      <dl class="legend-list">
-        <dt>Sportsbook odds</dt>
-        <dd>The actual moneyline you'd see at a book — each side's price averaged across every bookmaker tracked, vig included. A real, bettable price, not a theoretical one.</dd>
-        <dt>Model odds</dt>
-        <dd>The model's win probability for this specific game (season offense blended with today's starter FIP + bullpen ERA, park-adjusted, Pythagorean expectation + home field) converted to the same +150/−130 format, with no vig. Win% shown underneath for reference.</dd>
-        <dt>Model likes</dt>
-        <dd>Whichever team's model odds are more favorable than the sportsbook's price, and by how many points of win probability — the one number that matters if you're scanning for value.</dd>
-        <dt>Proj. run diff</dt>
-        <dd>Today's game-specific projected run differential — not season run differential (see each team's record above for that) — given today's park and pitching matchups.</dd>
-        <dt>Line move</dt>
-        <dd>Each side's price the first time this tool logged odds today ("opened") versus right now, plus the net shift in home-team win probability. Needs at least two runs today to show anything - a self-collected proxy, not a paid "sharp money" feed.</dd>
-      </dl>
-      <p class="disclaimer">This is a probability/edge estimate for research purposes, not a guarantee — treat it as one input, not an answer. Starting pitcher FIP is season-to-date, not adjusted for the specific matchup or recent form.</p>
+    <div class="tab-panel panel-analysis">
+      {_analysis_tab_html()}
     </div>
 
   </div>

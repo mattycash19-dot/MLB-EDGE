@@ -22,6 +22,7 @@ week or two of actual completed games on your own machine.
 """
 import json
 import os
+import subprocess
 import sys
 import urllib.request
 from datetime import date
@@ -30,6 +31,24 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 BASE = "https://statsapi.mlb.com/api/v1"
 LOG_PATH = os.path.join(os.path.dirname(__file__), "predictions_log.jsonl")
+
+
+def _model_version():
+    """Short identifier for the code state that produced a prediction, so a
+    later postmortem can tell which version of the model made a given pick.
+    GITHUB_SHA is set by the Actions workflow; falls back to a local git
+    lookup for manual runs."""
+    sha = os.environ.get("GITHUB_SHA")
+    if sha:
+        return sha[:7]
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=os.path.dirname(__file__) or ".", stderr=subprocess.DEVNULL,
+        )
+        return out.decode().strip()
+    except Exception:
+        return "unknown"
 
 
 def _get(url):
@@ -102,6 +121,8 @@ def log_predictions(report, path=LOG_PATH):
                 upgraded += 1
             continue
 
+        home_starter = g.get("home_starter") or {}
+        away_starter = g.get("away_starter") or {}
         new_records.append({
             "date": report["date"],
             "game_pk": g["game_pk"],
@@ -114,6 +135,20 @@ def log_predictions(report, path=LOG_PATH):
             "edge_pts": edge_pts,
             "resolved": False,
             "home_won": None,
+            # Everything below is diagnostic context only (never re-derives
+            # the pick) - captured so a future postmortem on a surprising
+            # result doesn't hit a dead end, the way the 2026-07-27 Cardinals
+            # game did (19pt model/market gap, no inputs saved anywhere).
+            "model_version": _model_version(),
+            "park_factor": g.get("park_factor"),
+            "home_starter_fip": home_starter.get("fip"),
+            "away_starter_fip": away_starter.get("fip"),
+            "home_bullpen_era": home_starter.get("bullpen_era"),
+            "away_bullpen_era": away_starter.get("bullpen_era"),
+            "home_projected_runs": g.get("home_projected_runs"),
+            "away_projected_runs": g.get("away_projected_runs"),
+            "home_recent_form": g.get("home_recent_form"),
+            "away_recent_form": g.get("away_recent_form"),
         })
 
     if upgraded:
@@ -309,6 +344,134 @@ def compute_track_record(path=LOG_PATH, tiers=CONFIDENCE_TIERS):
             for _, name in tiers
         ],
     }
+
+
+def generate_postmortems(path=LOG_PATH):
+    """
+    For every resolved, gradeable prediction: a one-line confirmation if the
+    pick was right, or a best-effort read on *why* it might have missed if
+    not. This is a heuristic reading of whatever got logged for that pick
+    (see log_predictions) - not a claim of certainty. The goal is to always
+    land on one of two honest conclusions: something specific pointed the
+    wrong way (and here's what), or nothing did and this is ordinary
+    variance (any team can beat any team on a given day). Never invents a
+    reason that isn't backed by a logged number.
+    """
+    records = [
+        r for r in _read_all(path)
+        if r.get("resolved") and r.get("home_won") is not None and r.get("picked_side") is not None
+    ]
+    records.sort(key=lambda r: r["date"], reverse=True)
+
+    out = []
+    for r in records:
+        correct = (r["picked_side"] == "home") == bool(r["home_won"])
+        edge = r.get("edge_pts") or 0
+        picked_form = r.get("home_recent_form") if r["picked_side"] == "home" else r.get("away_recent_form")
+
+        if correct:
+            explanation = "Correct - model's read held up."
+        else:
+            reasons = []
+            if edge >= 15:
+                reasons.append(
+                    f"a {edge:.1f}-point gap from the market is unusually large - big "
+                    f"disagreements like this are more often a bad or stale input (wrong "
+                    f"starter assigned, stale FIP, missing injury news) than genuine value "
+                    f"the market missed. Worth checking this game's logged starter/bullpen/"
+                    f"park inputs above."
+                )
+            if picked_form and str(picked_form.get("streak_code", "")).startswith("L"):
+                reasons.append(
+                    f"the picked team was on a {picked_form['streak_code']} losing streak "
+                    f"(last 10: {picked_form.get('last_ten', '?')}) - recent form pointed "
+                    f"the other way from the season-average model, which doesn't weigh "
+                    f"recent form at all right now."
+                )
+            if edge < 3:
+                reasons.append(
+                    f"only a {edge:.1f}-point edge to begin with - this was close to a "
+                    f"coin-flip already, so a loss here is ordinary variance, not a miss."
+                )
+            if not reasons:
+                reasons.append(
+                    "no single factor in the logged data stands out - most likely just "
+                    "normal game-to-game variance (any team can beat any team on a given "
+                    "day; that's baseball)."
+                )
+            explanation = " ".join(reasons)
+
+        out.append({
+            "date": r["date"],
+            "matchup": f"{r['away_team']} @ {r['home_team']}",
+            "picked_team": r.get("picked_team"),
+            "edge_pts": r.get("edge_pts"),
+            "correct": correct,
+            "explanation": explanation,
+        })
+    return out
+
+
+def detect_patterns(path=LOG_PATH):
+    """
+    Lightweight, honest pattern-spotting across everything resolved so far.
+    Deliberately conservative about sample size - says how many picks a
+    pattern is based on so a 5-pick fluke doesn't read the same as a
+    real trend. Add more checks here as more history accumulates; each one
+    should name the exact count it's based on rather than assert certainty.
+    """
+    records = [
+        r for r in _read_all(path)
+        if r.get("resolved") and r.get("home_won") is not None and r.get("picked_side") is not None
+    ]
+    notes = []
+    if not records:
+        return notes
+
+    home_picks = [r for r in records if r["picked_side"] == "home"]
+    away_picks = [r for r in records if r["picked_side"] == "away"]
+    if len(home_picks) >= 5 and not away_picks:
+        home_wins = sum(1 for r in home_picks if r["home_won"])
+        notes.append(
+            f"Every graded pick so far ({len(home_picks)}) has been on the home team, "
+            f"going {home_wins}-{len(home_picks) - home_wins}. The flat +4pt home-field "
+            f"boost in model.py mechanically tilts close games toward the home side - "
+            f"worth watching whether this keeps up as more data comes in, and if so, "
+            f"whether that boost is overweighted relative to how the market already "
+            f"prices home field."
+        )
+    return notes
+
+
+# Curated, hand-maintained list of ideas that could plausibly improve pick
+# accuracy - not yet implemented. Add to this as postmortems/patterns above
+# surface new candidates; remove or check off items once actually tried.
+FUTURE_ADJUSTMENTS = [
+    {
+        "idea": "Blend recent form (last-10 record, streak) into the probability model.",
+        "why": "mlb_data.get_team_recent_form() is already fetched for every game but only "
+               "used in the prose write-up - the probability calc itself is 100% "
+               "season-aggregate and never sees whether a team is hot or cold right now.",
+    },
+    {
+        "idea": "Flag edges above ~15 points for manual review instead of trusting them at "
+                "face value.",
+        "why": "A gap that large from a liquid market is statistically more likely to be a "
+               "bad or stale input than real value the market missed.",
+    },
+    {
+        "idea": "Track win rate split by home-pick vs. away-pick once there's enough data.",
+        "why": "Early results show every graded pick landing on the home side - could be "
+               "coincidence at this sample size, or could mean the flat home-field boost "
+               "is overweighted (see detect_patterns()).",
+    },
+    {
+        "idea": "Persist full per-game inputs for every pick.",
+        "why": "Done as of this update - before it, a 19-point outlier (Cardinals, "
+               "2026-07-27) couldn't be diagnosed after the fact because none of the "
+               "underlying starter/bullpen/park inputs were saved anywhere.",
+    },
+]
 
 
 if __name__ == "__main__":
