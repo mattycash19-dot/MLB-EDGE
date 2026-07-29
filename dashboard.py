@@ -286,16 +286,18 @@ def _final_card(g):
 
 
 def _live_score(g, is_home):
-    """Current score for an in-progress game, shown inline next to that
-    team's name so it reads as one line per team rather than a lone
-    ambiguous number. Only for 'Live' games - Preview games are always
-    0-0 (meaningless) and Final games are rendered separately."""
-    if g.get("abstract_state") != "Live":
-        return ""
+    """Score placeholder next to each team's name. Rendered into the DOM
+    even for a 'Preview' game (just hidden) so the client-side live-score
+    poller (see render()'s <script> - fetches MLB's public schedule
+    endpoint straight from the browser every ~90s) has a stable element to
+    write into without a full page rebuild/redeploy. Visible immediately
+    if the game is already Live at build time; the poller reveals it once
+    the game actually starts."""
+    side = "home" if is_home else "away"
     score = g.get("home_score") if is_home else g.get("away_score")
-    if score is None:
-        return ""
-    return f'<span class="live-score">{score}</span>'
+    visible = g.get("abstract_state") == "Live" and score is not None
+    style = "" if visible else ' style="display:none"'
+    return f'<span class="live-score" data-side="{side}"{style}>{score if score is not None else ""}</span>'
 
 
 def _row(g, is_top=False):
@@ -313,14 +315,19 @@ def _row(g, is_top=False):
     tier = _edge_tier(g)
     game_class = f"game {tier}" if tier else "game"
     badge_html = '<span class="top-badge">Top edge today</span>' if is_top and tier else ""
-    if g.get("abstract_state") == "Live":
-        badge_html += '<span class="live-pill">● Live</span>'
+    # Placeholder pill, same idea as _live_score(): kept in the DOM (hidden
+    # unless already Live at build time) so the browser-side poller can
+    # reveal/update it in place - "● Live" while in progress, "● Final"
+    # once it ends - without a page reload.
+    pill_visible = g.get("abstract_state") == "Live"
+    pill_style = "" if pill_visible else ' style="display:none"'
+    badge_html += f'<span class="live-pill" data-live-pill{pill_style}>● Live</span>'
 
     away_rec = g["away_record"]
     home_rec = g["home_record"]
 
     return f"""
-    <div class="{game_class}">
+    <div class="{game_class}" data-pk="{g['game_pk']}">
       <div class="col matchup">
         {badge_html}
         <div class="team">{_team_badge(g['away_team'])}{g['away_team']}{_live_score(g, False)}<span class="rec">{away_rec.get('wins','-')}–{away_rec.get('losses','-')} · rd {_rd(g.get('away_run_diff'))}</span></div>
@@ -924,6 +931,63 @@ def render(report, out_path=None):
     </div>
 
   </div>
+
+  <script>
+  (function () {{
+    // Live scores only - purely client-side, no server/build involved.
+    // Predictions/edges still only refresh on the normal (slow) rebuild
+    // cadence; this just keeps the score/status on today's games current
+    // while someone has the page open, straight from MLB's public,
+    // CORS-open schedule endpoint (same one build_report.py uses server-side).
+    var GAME_DATE = "{report['date']}";
+    var POLL_MS = 90000;
+    var stillLive = true;
+
+    function apply(pk, state, homeScore, awayScore) {{
+      var row = document.querySelector('.game[data-pk="' + pk + '"]');
+      if (!row) return;
+      if (state === 'Live' || state === 'Final') {{
+        var homeEl = row.querySelector('.live-score[data-side="home"]');
+        var awayEl = row.querySelector('.live-score[data-side="away"]');
+        if (homeEl && homeScore != null) {{ homeEl.textContent = homeScore; homeEl.style.display = ''; }}
+        if (awayEl && awayScore != null) {{ awayEl.textContent = awayScore; awayEl.style.display = ''; }}
+      }}
+      var pill = row.querySelector('[data-live-pill]');
+      if (pill) {{
+        if (state === 'Live') {{ pill.textContent = '● Live'; pill.style.display = ''; }}
+        else if (state === 'Final') {{ pill.textContent = '● Final'; pill.style.display = ''; }}
+      }}
+    }}
+
+    function poll() {{
+      if (document.visibilityState !== 'visible' || !stillLive) return;
+      fetch('https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + GAME_DATE)
+        .then(function (r) {{ return r.json(); }})
+        .then(function (data) {{
+          var days = (data && data.dates) || [];
+          var games = (days[0] && days[0].games) || [];
+          var anyUnfinished = false;
+          games.forEach(function (g) {{
+            var state = g.status && g.status.abstractGameState;
+            if (state !== 'Final') anyUnfinished = true;
+            var home = g.teams && g.teams.home, away = g.teams && g.teams.away;
+            apply(g.gamePk, state, home && home.score, away && away.score);
+          }});
+          stillLive = anyUnfinished;
+        }})
+        .catch(function () {{ /* MLB API hiccup - just try again next interval */ }});
+    }}
+
+    poll();
+    var timer = setInterval(function () {{
+      if (!stillLive) {{ clearInterval(timer); return; }}
+      poll();
+    }}, POLL_MS);
+    document.addEventListener('visibilitychange', function () {{
+      if (document.visibilityState === 'visible') poll();
+    }});
+  }})();
+  </script>
 </body>
 </html>"""
 

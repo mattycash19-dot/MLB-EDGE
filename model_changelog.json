@@ -43,5 +43,10 @@
     "date": "2026-07-29",
     "summary": "v10 - blended recent form (last-10 record) into adjusted_win_probability() as a small, capped nudge (model.RECENT_FORM_WEIGHT = 0.06, max +/-6 points at the extreme of a 10-0 team facing a 0-10 team). Season offense/pitching/park still does nearly all of the work.",
     "why": "Justified independent of the 20-game backtest, unlike a weight retune would be: mlb_data.get_team_recent_form() was already being fetched for every game and thrown away except in the prose write-up. Deliberately NOT a response to the Low-confidence-tier weakness flagged in v9 - that would be tuning to noise. Whether this actually improves accuracy needs a fresh batch of resolved picks made under this version to tell."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "v11 - added client-side live score polling: the page now fetches MLB's public schedule endpoint directly from the browser every ~90s (paused when the tab isn't visible, stops entirely once every game today is Final) and updates each game's score/Live-Final pill in place - no rebuild, no commit, no deploy involved.",
+    "why": "GitHub's Actions `schedule:` trigger turned out to fire every 1.5-3 hours in practice rather than the configured 30 minutes (a platform limitation, not a bug here), so scores on the site were up to ~an hour stale. Rather than force more frequent commits/deploys (which would also make the git history noisier), scores now update live in the visitor's browser while predictions/edges keep updating on the existing, unchanged, infrequent rebuild cadence - the two don't need the same freshness, so they no longer share one."
   }
 ]
