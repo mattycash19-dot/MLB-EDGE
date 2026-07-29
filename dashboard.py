@@ -353,21 +353,21 @@ def _row(g, is_top=False):
       </div>
 
       <div class="col num">
-        <span class="mobile-label">Model likes</span>
+        <span class="price-label">Model likes</span>
         {_favored_edge_str(g)}
       </div>
 
       <div class="col num">
-        <span class="mobile-label">Proj. run diff</span>
+        <span class="price-label">Proj. run diff</span>
         {_run_diff_str(g)}
       </div>
 
       <div class="col num">
-        <span class="mobile-label">Line move</span>
+        <span class="price-label">Line move</span>
         {_movement_str(g)}
       </div>
 
-      <div class="col num books"><span class="mobile-label">Books</span>{books_note}</div>
+      <div class="col num books"><span class="price-label">Books</span>{books_note}</div>
     </div>
     """
 
@@ -710,7 +710,7 @@ def render(report, out_path=None):
   .game {{
     display: grid;
     grid-template-columns: 2.1fr 0.85fr 1.05fr 1.15fr 0.95fr 0.95fr 0.55fr;
-    align-items: start; gap: 0; position: relative;
+    align-items: start; gap: 0 var(--sp-4); position: relative;
     background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--edge-color, var(--border));
     border-radius: 6px; padding: var(--sp-4) var(--sp-5);
     transition: background 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
@@ -765,8 +765,7 @@ def render(report, out_path=None):
     text-align: right; flex: 1 1 auto; min-width: 220px;
   }}
 
-  .col {{ padding-right: 14px; }}
-  .col.num {{ text-align: right; padding-right: 0; }}
+  .col.num {{ text-align: right; }}
 
   .matchup .team {{
     font-family: var(--font-display); font-size: 16px; font-weight: 600; line-height: 1.5;
@@ -837,8 +836,6 @@ def render(report, out_path=None):
   .tip:hover .bubble, .tip:focus-visible .bubble {{ opacity: 1; transform: translateX(-50%) translateY(0); }}
   @media (prefers-reduced-motion: reduce) {{ .tip .bubble {{ transition: none; }} }}
 
-  .mobile-label {{ display: none; }}
-
   /* ---------- legend ---------- */
   .legend {{ margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); }}
   .legend-title {{ font-family: var(--font-display); font-style: italic; font-size: 15px; margin-bottom: 12px; color: var(--text); }}
@@ -857,10 +854,6 @@ def render(report, out_path=None):
     .matchup {{ grid-column: 1 / -1; }}
     .col.num {{ text-align: left; }}
     .price-label {{ margin-left: 0; }}
-    .mobile-label {{
-      display: block; font-family: var(--font-label); font-size: 9.5px; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px;
-    }}
   }}
 
   @media (max-width: 640px) {{

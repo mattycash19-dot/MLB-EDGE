@@ -48,5 +48,10 @@
     "date": "2026-07-29",
     "summary": "v11 - added client-side live score polling: the page now fetches MLB's public schedule endpoint directly from the browser every ~90s (paused when the tab isn't visible, stops entirely once every game today is Final) and updates each game's score/Live-Final pill in place - no rebuild, no commit, no deploy involved.",
     "why": "GitHub's Actions `schedule:` trigger turned out to fire every 1.5-3 hours in practice rather than the configured 30 minutes (a platform limitation, not a bug here), so scores on the site were up to ~an hour stale. Rather than force more frequent commits/deploys (which would also make the git history noisier), scores now update live in the visitor's browser while predictions/edges keep updating on the existing, unchanged, infrequent rebuild cadence - the two don't need the same freshness, so they no longer share one."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "v12 - UI fix: 'Model likes' and 'Proj. run diff' (plus 'Line move' and 'Books') had no visible column label on desktop at all - they used a .mobile-label class that only turns on below 780px, while 'Book'/'Model' used a separate always-visible .price-label class. Unified all six columns onto the one that actually shows. Also found the game-card grid had gap:0 with padding-right zeroed out on every numeric column, meaning zero gutter between them; added a real grid gap instead.",
+    "why": "Flagged directly by Matt (\"labels ... are missing\", \"spacing is a little off\"). Confirmed both by reading the CSS rather than guessing, and cross-checked the fix against the ui-ux-pro-max skill's visible-label and spacing-consistency guidance before shipping."
   }
 ]
