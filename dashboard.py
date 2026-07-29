@@ -249,6 +249,24 @@ def _probbar(g):
             f'<div class="seg-home" style="width:{home_p*100:.1f}%"></div></div>')
 
 
+def _degraded_model_flag(g):
+    """
+    Flags when the 'Model' number for this game is the plain season-only
+    Pythagorean probability instead of the full pitcher/bullpen/park-
+    adjusted one - build_report.py falls back silently (entry["pitching_error"]
+    is recorded but was never surfaced anywhere) whenever the pitching-data
+    fetch fails for a specific game (e.g. a call-up with no season stats
+    logged yet, or a transient API hiccup). Without this, that game's
+    number looks identical to every other game's fully-adjusted one with no
+    way to tell they're not the same kind of estimate.
+    """
+    err = g.get("pitching_error")
+    if not err:
+        return ""
+    warn = f"Pitcher/bullpen data unavailable for this game ({err}) - showing the season-only model instead of the full pitcher-adjusted one."
+    return f'<span class="tip outlier-flag" tabindex="0" aria-label="{warn}">season-only ⚠<span class="bubble" aria-hidden="true">{warn}</span></span>'
+
+
 def _starter_str(starter):
     if not starter or not starter.get("name"):
         return "<span class='muted'>TBD</span>"
@@ -397,6 +415,7 @@ def _row(g, is_top=False):
 
       <div class="col num">
         <span class="price-label tip" tabindex="0" aria-label="Model's fair price with no vig, converted from its win probability.">Model<span class="bubble" aria-hidden="true">Model's fair price with no vig, converted from its win probability.</span></span>
+        {_degraded_model_flag(g)}
         {_ml(g.get('away_model_ml'))}<br>{_ml(g.get('home_model_ml'))}
         {_probbar(g)}
         <span class="winpct">{_pct(g.get('away_model_prob'))} / {_pct(g.get('home_model_prob'))}</span>

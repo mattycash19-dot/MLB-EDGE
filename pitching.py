@@ -55,7 +55,12 @@ def get_pitcher_season_stats(pitcher_id, season=None):
     """Raw season pitching line for one pitcher. Returns None if no data (e.g. hasn't pitched)."""
     season = season or date.today().year
     data = _get(f"{BASE}/people/{pitcher_id}/stats?stats=season&group=pitching&season={season}")
-    splits = data.get("stats", [{}])[0].get("splits", [])
+    # .get("stats", [{}]) only supplies the default when the key is absent -
+    # the API returns {"stats": []} (present but empty) for a pitcher with no
+    # season data yet, and [][0] would raise IndexError instead of hitting
+    # the "no data" case this function is supposed to degrade to gracefully.
+    stats_list = data.get("stats") or [{}]
+    splits = stats_list[0].get("splits", [])
     if not splits:
         return None
     s = splits[0]["stat"]
@@ -94,7 +99,9 @@ def get_recent_starts(pitcher_id, n=3, season=None):
     """
     season = season or date.today().year
     data = _get(f"{BASE}/people/{pitcher_id}/stats?stats=gameLog&group=pitching&season={season}")
-    splits = data.get("stats", [{}])[0].get("splits", [])
+    # same empty-vs-absent-key gap as get_pitcher_season_stats above
+    stats_list = data.get("stats") or [{}]
+    splits = stats_list[0].get("splits", [])
     # only count actual starts (gamesStarted == 1 in that game's log entry)
     starts = [s for s in splits if s.get("stat", {}).get("gamesStarted", 0) == 1]
     if not starts:
