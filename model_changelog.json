@@ -38,5 +38,10 @@
     "date": "2026-07-29",
     "summary": "v9 - reconciled the second day (2026-07-28): 20 graded picks combined, 8-12 (40%) overall, Brier score 0.2542 (slightly worse than a coin flip's 0.25 - not yet demonstrating real calibration). Generalized detect_patterns() to flag any CONFIDENCE_TIERS bucket that's meaningfully below breakeven at n>=8 (currently: Low-confidence/0-5pt picks are 3-8, 27%).",
     "why": "A first look at edge in narrow custom bands seemed to show a stark '3-5pt edge = 0-for-5' pattern, but that used bin boundaries chosen after seeing the data - re-checked with neutral, uniform-width bins and the effect mostly vanished into small-sample noise. Recorded here as a caution against boundary-shopping, and to explain why the pattern check below uses the pre-existing tier boundaries instead of custom bands."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "v10 - blended recent form (last-10 record) into adjusted_win_probability() as a small, capped nudge (model.RECENT_FORM_WEIGHT = 0.06, max +/-6 points at the extreme of a 10-0 team facing a 0-10 team). Season offense/pitching/park still does nearly all of the work.",
+    "why": "Justified independent of the 20-game backtest, unlike a weight retune would be: mlb_data.get_team_recent_form() was already being fetched for every game and thrown away except in the prose write-up. Deliberately NOT a response to the Low-confidence-tier weakness flagged in v9 - that would be tuning to noise. Whether this actually improves accuracy needs a fresh batch of resolved picks made under this version to tell."
   }
 ]

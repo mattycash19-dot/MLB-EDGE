@@ -52,9 +52,51 @@ def model_win_probability(home_stats, away_stats, home_boost=HOME_FIELD_BOOST):
     return home_prob, 1 - home_prob
 
 
+RECENT_FORM_WEIGHT = 0.06  # capped max influence of last-10 form differential (see below)
+
+
+def _last_ten_pct(recent_form):
+    """recent_form is the dict from mlb_data.get_team_recent_form() -
+    {"streak_code": "W3", "last_ten": "7-3"} - or None if unavailable.
+    Returns win pct over the last 10 games, or None if not parseable."""
+    if not recent_form:
+        return None
+    last_ten = recent_form.get("last_ten")
+    if not last_ten or "-" not in str(last_ten):
+        return None
+    try:
+        w, l = str(last_ten).split("-")
+        w, l = int(w), int(l)
+    except ValueError:
+        return None
+    total = w + l
+    return w / total if total else None
+
+
+def recent_form_adjustment(home_recent_form, away_recent_form, weight=RECENT_FORM_WEIGHT):
+    """
+    Small nudge toward whichever team has been hotter over their last 10
+    games, layered on top of the season-aggregate projection. Deliberately
+    capped small: the max possible swing is +/-`weight` (default 0.06, i.e.
+    6 points of win probability), which only happens at the extreme of a
+    10-0 team facing a 0-10 team - a typical 7-3 vs 3-7 split moves the
+    number by about 2.4 points. Last-10 record is a real signal but a noisy,
+    small-sample one; it's meant to nudge close calls, not override the
+    season-long offense/pitching/park projection that does most of the work.
+    Returns 0.0 (no effect) if either team's recent form isn't available
+    (e.g. very early season) rather than guessing.
+    """
+    home_pct = _last_ten_pct(home_recent_form)
+    away_pct = _last_ten_pct(away_recent_form)
+    if home_pct is None or away_pct is None:
+        return 0.0
+    return (home_pct - away_pct) * weight
+
+
 def adjusted_win_probability(home_offense_rpg, away_offense_rpg,
                               home_pitching_ra9, away_pitching_ra9,
-                              park_factor=100, home_boost=HOME_FIELD_BOOST):
+                              park_factor=100, home_boost=HOME_FIELD_BOOST,
+                              home_recent_form=None, away_recent_form=None):
     """
     Upgraded model: instead of season-aggregate Pythagorean expectation,
     projects each team's expected runs FOR THIS SPECIFIC GAME by blending
@@ -71,6 +113,10 @@ def adjusted_win_probability(home_offense_rpg, away_offense_rpg,
         allowed per 9 for each team's pitching staff (from
         pitching.starter_adjusted_runs_allowed_per9).
     park_factor: today's venue's run factor (100 = neutral, see park_factors.py).
+    home_recent_form / away_recent_form: optional dicts from
+        mlb_data.get_team_recent_form() - when both are present, applies a
+        small capped nudge toward whichever team's been hotter lately (see
+        recent_form_adjustment()); has no effect if either is missing.
 
     Returns (home_win_prob, away_win_prob, home_projected_runs, away_projected_runs).
     """
@@ -78,7 +124,8 @@ def adjusted_win_probability(home_offense_rpg, away_offense_rpg,
     away_proj = (away_offense_rpg + home_pitching_ra9) / 2 * (park_factor / 100)
 
     neutral_home_prob = pythagorean_win_pct(home_proj, away_proj)
-    home_prob = min(max(neutral_home_prob + home_boost, 0.01), 0.99)
+    form_adj = recent_form_adjustment(home_recent_form, away_recent_form)
+    home_prob = min(max(neutral_home_prob + home_boost + form_adj, 0.01), 0.99)
     return home_prob, 1 - home_prob, home_proj, away_proj
 
 

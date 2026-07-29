@@ -906,7 +906,7 @@ def render(report, out_path=None):
           <dt>Sportsbook odds</dt>
           <dd>The actual moneyline you'd see at a book — each side's price averaged across every bookmaker tracked, vig included. A real, bettable price, not a theoretical one.</dd>
           <dt>Model odds</dt>
-          <dd>The model's win probability for this specific game (season offense blended with today's starter FIP + bullpen ERA, park-adjusted, Pythagorean expectation + home field) converted to the same +150/−130 format, with no vig. Win% shown underneath for reference.</dd>
+          <dd>The model's win probability for this specific game (season offense blended with today's starter FIP + bullpen ERA, park-adjusted, Pythagorean expectation + home field, plus a small capped nudge for whichever team's been hotter over their last 10 games) converted to the same +150/−130 format, with no vig. Win% shown underneath for reference.</dd>
           <dt>Model likes</dt>
           <dd>Whichever team's model odds are more favorable than the sportsbook's price, and by how many points of win probability — the one number that matters if you're scanning for value.</dd>
           <dt>Proj. run diff</dt>

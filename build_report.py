@@ -143,6 +143,9 @@ def build(game_date=None, include_pitching=True):
             "away_run_diff": away_stats.get("runs_scored", 0) - away_stats.get("runs_allowed", 0),
         }
 
+        home_recent_form = mlb_data.get_team_recent_form(g["home_id"], all_teams_stats=stats_by_team)
+        away_recent_form = mlb_data.get_team_recent_form(g["away_id"], all_teams_stats=stats_by_team)
+
         if include_pitching:
             try:
                 home_pitcher_info = probable_pitchers.get(g["game_pk"], {}).get("home")
@@ -158,7 +161,8 @@ def build(game_date=None, include_pitching=True):
 
                 home_prob, away_prob, home_proj_runs, away_proj_runs = model.adjusted_win_probability(
                     home_off_rpg, away_off_rpg, home_ra9, away_ra9,
-                    park_factor=entry["park_factor"])
+                    park_factor=entry["park_factor"],
+                    home_recent_form=home_recent_form, away_recent_form=away_recent_form)
 
                 entry["home_model_prob"] = round(home_prob, 4)
                 entry["away_model_prob"] = round(away_prob, 4)
@@ -185,8 +189,8 @@ def build(game_date=None, include_pitching=True):
                 # if pitching data fails for this game, keep the season-only numbers already set
                 entry["pitching_error"] = str(e)
 
-        entry["home_recent_form"] = mlb_data.get_team_recent_form(g["home_id"], all_teams_stats=stats_by_team)
-        entry["away_recent_form"] = mlb_data.get_team_recent_form(g["away_id"], all_teams_stats=stats_by_team)
+        entry["home_recent_form"] = home_recent_form
+        entry["away_recent_form"] = away_recent_form
 
         ev = odds_by_teams.get((norm(g["home_name"]), norm(g["away_name"])))
         if ev:

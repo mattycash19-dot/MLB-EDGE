@@ -472,9 +472,12 @@ def detect_patterns(path=LOG_PATH):
 FUTURE_ADJUSTMENTS = [
     {
         "idea": "Blend recent form (last-10 record, streak) into the probability model.",
-        "why": "mlb_data.get_team_recent_form() is already fetched for every game but only "
-               "used in the prose write-up - the probability calc itself is 100% "
-               "season-aggregate and never sees whether a team is hot or cold right now.",
+        "why": "Done as of v10 (2026-07-29): model.adjusted_win_probability() now applies a "
+               "small, capped nudge (model.RECENT_FORM_WEIGHT, max +/-6 points) toward "
+               "whichever team's been hotter over their last 10 games - justified "
+               "independent of the small backtest sample, since the data was already being "
+               "fetched and thrown away. Whether it actually helps still needs enough "
+               "resolved picks post-change to tell.",
     },
     {
         "idea": "Flag edges above ~15 points for manual review instead of trusting them at "
