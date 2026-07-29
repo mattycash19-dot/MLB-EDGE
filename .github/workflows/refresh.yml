@@ -46,7 +46,19 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add report.json predictions_log.jsonl odds_history.jsonl
           git diff --cached --quiet || git commit -m "Refresh data $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
+          # The `concurrency: group: pages` block above mostly keeps runs from
+          # overlapping, but a schedule + manual trigger landing seconds apart
+          # can still both check out before either pushes - the second run's
+          # push is then rejected as non-fast-forward. These are pure data
+          # files regenerated fresh each run (not hand-edited), so a rebase
+          # onto whatever the other run just pushed is always safe here.
+          for i in 1 2 3 4 5; do
+            git push && break
+            echo "Push rejected (attempt $i/5) - another run pushed first. Rebasing and retrying..."
+            git fetch origin master
+            git rebase origin/master
+            sleep $((RANDOM % 8 + 2))
+          done
 
       - name: Prepare Pages output
         run: |

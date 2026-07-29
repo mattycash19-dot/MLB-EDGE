@@ -53,5 +53,10 @@
     "date": "2026-07-29",
     "summary": "v12 - UI fix: 'Model likes' and 'Proj. run diff' (plus 'Line move' and 'Books') had no visible column label on desktop at all - they used a .mobile-label class that only turns on below 780px, while 'Book'/'Model' used a separate always-visible .price-label class. Unified all six columns onto the one that actually shows. Also found the game-card grid had gap:0 with padding-right zeroed out on every numeric column, meaning zero gutter between them; added a real grid gap instead.",
     "why": "Flagged directly by Matt (\"labels ... are missing\", \"spacing is a little off\"). Confirmed both by reading the CSS rather than guessing, and cross-checked the fix against the ui-ux-pro-max skill's visible-label and spacing-consistency guidance before shipping."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "Ops fix (not a model/UI version bump): the workflow's git push had no retry logic, so any two runs overlapping even briefly (a manual trigger landing seconds before/after a scheduled one) caused the second to fail outright with a rejected non-fast-forward push - losing that cycle's data update. Added a fetch+rebase+retry loop around the push.",
+    "why": "Hit this for real: a manual dispatch and the schedule trigger landed 19 seconds apart, and the second run failed clean rather than silently - good that it was loud, but it shouldn't have needed a human to notice and re-run it. report.json/predictions_log.jsonl/odds_history.jsonl are machine-regenerated each run (never hand-edited), so rebasing onto whatever the other run just pushed is always safe here."
   }
 ]
