@@ -151,6 +151,13 @@ def _edge_tier(g):
     return "light"
 
 
+# Matches the threshold backtest.generate_postmortems() uses to call out a
+# miss's edge as "unusually large" - kept as one flag surfaced in two places
+# (live pick here, postmortem after the fact) rather than two disconnected
+# numbers that could drift apart.
+OUTLIER_EDGE_PTS = 15
+
+
 def _favored_edge_str(g):
     """
     Single-line version of edge: home_edge and away_edge are always exact
@@ -158,7 +165,10 @@ def _favored_edge_str(g):
     the negative of the other's), so showing both as separate +/- numbers
     just doubles the same information and reads like two findings instead
     of one. This picks whichever team the model likes more than the market
-    price does, and names them directly.
+    price does, and names them directly. Edges past OUTLIER_EDGE_PTS get an
+    extra warning flag rather than being shown with the same quiet
+    confidence as an ordinary pick - a gap that large from a liquid market
+    is statistically more likely to be a bad/stale input than real value.
     """
     tier = _edge_tier(g)
     if tier is None:
@@ -174,7 +184,15 @@ def _favored_edge_str(g):
     short = team.split()[-1]
     pts = val * 100
     aria = f"Model favors the {short} by {abs(pts):.1f} points more than the market price — a {tier}-tier edge."
-    return f"<span class=\"chip tier-{tier}\" tabindex=\"0\" aria-label=\"{aria}\">▲ {short} {'+' if pts >= 0 else ''}{pts:.1f} pts</span>"
+    chip = f"<span class=\"chip tier-{tier}\" tabindex=\"0\" aria-label=\"{aria}\">▲ {short} {'+' if pts >= 0 else ''}{pts:.1f} pts</span>"
+    if abs(pts) >= OUTLIER_EDGE_PTS:
+        warn = (f"A gap this large ({abs(pts):.1f} pts) from a liquid market is statistically more "
+                f"likely to be a bad or stale input (wrong starter, stale FIP, missing injury news) "
+                f"than real value the market missed. Check the starter/bullpen/park inputs (see "
+                f"\"Why this prediction?\" below) before trusting this one.")
+        chip += (f'<span class="tip outlier-flag" tabindex="0" aria-label="{warn}"> ⚠'
+                 f'<span class="bubble" aria-hidden="true">{warn}</span></span>')
+    return chip
 
 
 def _run_diff_str(g):
@@ -246,26 +264,58 @@ def _rd(x):
     return f"{sign}{x}"
 
 
-def _final_result_str(g):
+def _logged_pick(report_date, game_pk):
+    """
+    Look up the pick actually logged for this game in predictions_log.jsonl
+    back when a market line was available. Needed because report.json is
+    rebuilt from scratch every run - once a game goes Final, the Odds API
+    stops listing a line for it, so a fresh rebuild's home_edge/away_edge
+    come back None even for a game that WAS gradeable and DID get logged
+    correctly earlier that day (this is exactly what happened to the
+    Marlins/Phillies game on 2026-07-29: logged with a real 8.4pt edge,
+    then the next rebuild showed "not a graded pick" once the odds
+    disappeared from the live feed). Returns (picked_side, picked_team) or
+    None if this game was genuinely never logged with a market line.
+    """
+    try:
+        for r in backtest._read_all():
+            if r.get("date") == report_date and r.get("game_pk") == game_pk and r.get("picked_side"):
+                return r["picked_side"], r.get("picked_team")
+    except Exception:
+        pass
+    return None
+
+
+def _final_result_str(g, report_date=None):
     """
     For a game whose abstract_state is 'Final': names the winner and,
     when the game was gradeable (a market line existed when it was
     logged), says whether the model's pick was right. Games that never
     had a market line before they started (line pulled once betting
     closes, no odds ever fetched) are honestly labeled ungraded rather
-    than silently omitted or scored as a miss.
+    than silently omitted or scored as a miss. Falls back to the logged
+    pick (see _logged_pick) when today's freshly-rebuilt report no longer
+    carries odds for this now-finished game.
     """
     hs, aws = g.get("home_score"), g.get("away_score")
     if hs is None or aws is None:
         return "<span class='muted'>Final — score unavailable</span>"
 
     he, ae = g.get("home_edge"), g.get("away_edge")
-    if he is None or ae is None:
+    picked_side = picked_team = None
+    if he is not None and ae is not None:
+        picked_side = "home" if he >= ae else "away"
+        picked_team = (g["home_team"] if picked_side == "home" else g["away_team"]).split()[-1]
+    elif report_date is not None:
+        logged = _logged_pick(report_date, g["game_pk"])
+        if logged:
+            picked_side, logged_team = logged
+            picked_team = logged_team.split()[-1] if logged_team else None
+
+    if picked_side is None:
         grade = "<span class='muted'>no market line was posted before this game started — not a graded pick</span>"
     else:
-        picked_home = he >= ae
-        picked_team = (g["home_team"] if picked_home else g["away_team"]).split()[-1]
-        correct = (picked_home and hs > aws) or (not picked_home and aws > hs)
+        correct = (picked_side == "home" and hs > aws) or (picked_side == "away" and aws > hs)
         cls = "pos" if correct else "neg"
         mark = "correct" if correct else "incorrect"
         grade = f"<span class='{cls}'>model favored {picked_team} — {mark}</span>"
@@ -273,14 +323,14 @@ def _final_result_str(g):
     return f"Final: {g['away_team'].split()[-1]} {aws} – {g['home_team'].split()[-1]} {hs} · {grade}"
 
 
-def _final_card(g):
+def _final_card(g, report_date=None):
     return f"""
     <div class="finalcard">
       <div class="fteams">
         <span class="fteam">{_team_badge(g['away_team'])}{g['away_team']}</span>
         <span class="fteam"><span class="at">@</span>{_team_badge(g['home_team'])}{g['home_team']}</span>
       </div>
-      <div class="fresult">{_final_result_str(g)}</div>
+      <div class="fresult">{_final_result_str(g, report_date)}</div>
     </div>
     """
 
@@ -396,6 +446,23 @@ def _changelog_html():
     return f'<div class="chlog">{rows}</div>'
 
 
+def _home_away_split_html():
+    try:
+        split = backtest.compute_home_away_split()
+    except Exception as e:
+        return f'<p class="an-empty">Home/away split unavailable: {e}</p>'
+
+    def _rec(s):
+        n = s["wins"] + s["losses"]
+        if n == 0:
+            return "—"
+        pct = f" ({s['win_pct']*100:.0f}%)" if s["win_pct"] is not None else ""
+        return f"{s['wins']}-{s['losses']}{pct}"
+
+    tiles = _tile(_rec(split["home"]), "Picked Home") + _tile(_rec(split["away"]), "Picked Away")
+    return f'<div class="an-subhead">Win rate: picked home vs. picked away</div><div class="tiles">{tiles}</div>'
+
+
 def _patterns_html():
     try:
         notes = backtest.detect_patterns()
@@ -453,6 +520,7 @@ def _analysis_tab_html():
       <p class="an-note">Every graded pick once its game is final — correct or not, and for
       misses, a best-effort read on whether something specific pointed the wrong way or it
       was just normal variance (any team can beat any team on a given day).</p>
+      {_home_away_split_html()}
       {_patterns_html()}
       {_postmortems_html()}
     </div>
@@ -495,7 +563,7 @@ def render(report, out_path=None):
           <div class="slate-count">{len(finished)} game{'s' if len(finished) != 1 else ''}</div>
         </div>
         <div class="finalcards">
-          {''.join(_final_card(g) for g in finished)}
+          {''.join(_final_card(g, report['date']) for g in finished)}
         </div>
         """
 
@@ -812,6 +880,8 @@ def render(report, out_path=None):
   .chip.tier-strong {{ background: rgba(var(--pos-rgb), 0.18); border-color: rgba(var(--pos-rgb), 0.55); }}
   .chip.tier-moderate {{ background: rgba(var(--pos-rgb), 0.1); border-color: rgba(var(--pos-rgb), 0.28); }}
   .chip.tier-light {{ background: rgba(var(--pos-rgb), 0.07); border-color: rgba(var(--pos-rgb), 0.2); }}
+
+  .outlier-flag {{ color: var(--neg); font-weight: 700; border-bottom-color: rgba(var(--neg-rgb), 0.55); }}
 
   .pos {{ color: var(--pos); font-weight: 600; }}
   .neg {{ color: var(--neg); font-weight: 600; }}

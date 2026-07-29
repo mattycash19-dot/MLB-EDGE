@@ -58,5 +58,10 @@
     "date": "2026-07-29",
     "summary": "Ops fix (not a model/UI version bump): the workflow's git push had no retry logic, so any two runs overlapping even briefly (a manual trigger landing seconds before/after a scheduled one) caused the second to fail outright with a rejected non-fast-forward push - losing that cycle's data update. Added a fetch+rebase+retry loop around the push.",
     "why": "Hit this for real: a manual dispatch and the schedule trigger landed 19 seconds apart, and the second run failed clean rather than silently - good that it was loud, but it shouldn't have needed a human to notice and re-run it. report.json/predictions_log.jsonl/odds_history.jsonl are machine-regenerated each run (never hand-edited), so rebasing onto whatever the other run just pushed is always safe here."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "v13 - fixed a real bug: a finished game (Marlins, 2026-07-29) showed 'not a graded pick' even though it WAS logged with a real 8.4pt edge earlier that day - the Odds API stops returning lines for finished games, so a fresh report.json rebuild loses home_edge/away_edge for any game that's since gone Final. dashboard._final_result_str() now falls back to the logged pick (predictions_log.jsonl) when the live report has none. Also implemented the two remaining open FUTURE_ADJUSTMENTS: outsized edges (>=15pt, dashboard.OUTLIER_EDGE_PTS) now get a visible warning flag on the live pick itself, and backtest.compute_home_away_split() is now always computed and shown on the Analysis tab, with detect_patterns() flagging a >=25-point home-vs-away gap once both sides have 8+ picks.",
+    "why": "Matt flagged the Marlins bug directly. The other two were the last unimplemented items on the improvement-ideas list from v9 - both are presentation/observability additions (no model math changed), so they don't carry the same overfitting risk as a weight change would."
   }
 ]

@@ -412,6 +412,38 @@ def generate_postmortems(path=LOG_PATH):
     return out
 
 
+def compute_home_away_split(path=LOG_PATH):
+    """
+    Win rate for graded picks broken out by which side (home/away) the
+    model actually picked - independent of edge-size tier. Exists
+    separately from compute_track_record()'s tiers because the question
+    here is different: model.py applies a flat home-field boost to every
+    game, so if the model's home-side picks win at a meaningfully different
+    rate than its away-side picks, that boost may be miscalibrated. Tracked
+    continuously (not just as a one-off pattern note) so the split is
+    visible any time there's enough data, not only in the bootstrap case
+    where every pick so far happens to be on one side.
+    """
+    records = [
+        r for r in _read_all(path)
+        if r.get("resolved") and r.get("home_won") is not None and r.get("picked_side") is not None
+    ]
+
+    def _pct(w, n):
+        return round(w / n, 3) if n else None
+
+    home = [r for r in records if r["picked_side"] == "home"]
+    away = [r for r in records if r["picked_side"] == "away"]
+    home_wins = sum(1 for r in home if r["home_won"])
+    away_wins = sum(1 for r in away if not r["home_won"])
+    home_losses, away_losses = len(home) - home_wins, len(away) - away_wins
+
+    return {
+        "home": {"wins": home_wins, "losses": home_losses, "win_pct": _pct(home_wins, len(home))},
+        "away": {"wins": away_wins, "losses": away_losses, "win_pct": _pct(away_wins, len(away))},
+    }
+
+
 def detect_patterns(path=LOG_PATH):
     """
     Lightweight, honest pattern-spotting across everything resolved so far.
@@ -463,6 +495,21 @@ def detect_patterns(path=LOG_PATH):
                     f"confidence) and could still be noise, but worth watching before "
                     f"treating picks in this tier as trustworthy value."
                 )
+
+    # General home-vs-away split, once both sides have enough picks to
+    # compare (complements the bootstrap check above, which only fires
+    # while away-side picks are still at zero).
+    if len(home_picks) >= 8 and len(away_picks) >= 8:
+        split = compute_home_away_split(path)
+        h, a = split["home"], split["away"]
+        if h["win_pct"] is not None and a["win_pct"] is not None and abs(h["win_pct"] - a["win_pct"]) >= 0.25:
+            notes.append(
+                f"Home-side picks are {h['wins']}-{h['losses']} ({h['win_pct']*100:.0f}%) vs. "
+                f"away-side picks {a['wins']}-{a['losses']} ({a['win_pct']*100:.0f}%) - a "
+                f"{abs(h['win_pct'] - a['win_pct'])*100:.0f}-point gap. Could mean the flat "
+                f"home-field boost in model.py is overweighted, or still just noise at this "
+                f"sample size - watch whether it persists."
+            )
     return notes
 
 
@@ -482,14 +529,21 @@ FUTURE_ADJUSTMENTS = [
     {
         "idea": "Flag edges above ~15 points for manual review instead of trusting them at "
                 "face value.",
-        "why": "A gap that large from a liquid market is statistically more likely to be a "
-               "bad or stale input than real value the market missed.",
+        "why": "Done as of 2026-07-29: dashboard.OUTLIER_EDGE_PTS (15, matching the threshold "
+               "generate_postmortems() already used after the fact) now adds a visible warning "
+               "flag + tooltip on the live pick itself, not just in the after-the-fact "
+               "postmortem. A gap that large from a liquid market is statistically more likely "
+               "to be a bad or stale input than real value the market missed.",
     },
     {
         "idea": "Track win rate split by home-pick vs. away-pick once there's enough data.",
-        "why": "Early results show every graded pick landing on the home side - could be "
-               "coincidence at this sample size, or could mean the flat home-field boost "
-               "is overweighted (see detect_patterns()).",
+        "why": "Done as of 2026-07-29: backtest.compute_home_away_split() is now always "
+               "computed and shown on the Analysis tab (not just as a one-off pattern note), "
+               "and detect_patterns() flags a >=25-point gap once both sides have 8+ picks. "
+               "Early results showed every graded pick landing on the home side - could be "
+               "coincidence at small sample size, or could mean the flat home-field boost is "
+               "overweighted; this makes it checkable on an ongoing basis instead of "
+               "one-time.",
     },
     {
         "idea": "Persist full per-game inputs for every pick.",
