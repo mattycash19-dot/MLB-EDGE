@@ -33,5 +33,10 @@
     "date": "2026-07-28",
     "summary": "v8 - extended prediction logging to capture starter FIP, bullpen ERA, park factor, projected runs, recent form, and a model-version tag per pick. Added this Analysis tab: changelog, pick-by-pick postmortems (why a pick missed, or whether it was just normal variance), pattern detection, and a running list of accuracy-improvement ideas.",
     "why": "First day's reconciled record (1-4) included a 19-point model/market gap (Cubs @ Cardinals game) that turned out to be undiagnosable after the fact - report.json wasn't persisted and predictions_log.jsonl only kept the bare probabilities, not the inputs that produced them. This closes that gap going forward."
+  },
+  {
+    "date": "2026-07-29",
+    "summary": "v9 - reconciled the second day (2026-07-28): 20 graded picks combined, 8-12 (40%) overall, Brier score 0.2542 (slightly worse than a coin flip's 0.25 - not yet demonstrating real calibration). Generalized detect_patterns() to flag any CONFIDENCE_TIERS bucket that's meaningfully below breakeven at n>=8 (currently: Low-confidence/0-5pt picks are 3-8, 27%).",
+    "why": "A first look at edge in narrow custom bands seemed to show a stark '3-5pt edge = 0-for-5' pattern, but that used bin boundaries chosen after seeing the data - re-checked with neutral, uniform-width bins and the effect mostly vanished into small-sample noise. Recorded here as a caution against boundary-shopping, and to explain why the pattern check below uses the pre-existing tier boundaries instead of custom bands."
   }
 ]

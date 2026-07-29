@@ -440,6 +440,29 @@ def detect_patterns(path=LOG_PATH):
             f"whether that boost is overweighted relative to how the market already "
             f"prices home field."
         )
+
+    # Tier check deliberately reuses CONFIDENCE_TIERS - boundaries fixed before
+    # this (or any) data existed, so flagging a weak tier here isn't shaped by
+    # today's results the way picking custom edge-range boundaries after
+    # looking at the data would be (that trap is real - a first pass at this
+    # found a "3-5pt band is 0-for-5" result that vanished into noise once
+    # re-checked with neutral, uniform-width bins instead of hand-picked ones).
+    try:
+        tr = compute_track_record(path)
+    except Exception:
+        tr = None
+    if tr:
+        for t in tr["by_tier"]:
+            n = t["wins"] + t["losses"]
+            if n >= 8 and t["win_pct"] is not None and t["win_pct"] <= 0.35:
+                notes.append(
+                    f"{t['tier']} picks are {t['wins']}-{t['losses']} "
+                    f"({t['win_pct']*100:.0f}%) over {n} graded picks - meaningfully below "
+                    f"breakeven. Still a modest sample (compute_calibration() wants 20+ "
+                    f"resolved before trusting probabilities at all, 100+ for real "
+                    f"confidence) and could still be noise, but worth watching before "
+                    f"treating picks in this tier as trustworthy value."
+                )
     return notes
 
 
