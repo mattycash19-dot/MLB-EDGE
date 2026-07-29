@@ -212,6 +212,43 @@ Kelly stake: 4.2%" without real backtested calibration behind them would be
 fabricated precision, not rigor — exactly the kind of number that gets
 someone to bet more than they should.
 
+## NRFI tab (No Run First Inning)
+
+A separate model, shown as its own tab on the dashboard, framed from three
+"how to actually check this" prompt templates rather than trusting a
+pitcher's season ERA at face value (Inning Split, Rust Factor, Order Check -
+see `nrfi.py`'s module docstring for the full reasoning and the vault note
+these were built from). All three factors are real, free MLB data:
+
+- **Inning Split**: each starter's actual first-inning-only stat line this
+  season (MLB's official `sitCodes=i01` split - confirmed via a live query
+  to actually exist and return real per-pitcher data, not a guess), fed into
+  a Poisson model of runs allowed in one inning.
+- **Order Check**: today's *actual posted batting order* (when available -
+  MLB typically posts lineups 1-3 hours before first pitch, so this is
+  routinely still empty at the time a morning run happens) for the top ~4
+  hitters each starter will actually face, nudging his base rate by how
+  their real season OBP compares to a league-average leadoff hitter. Skipped
+  entirely (not guessed) when the lineup isn't posted yet.
+- **Rust Factor**: real days-of-rest since each starter's last outing, with
+  a small capped nudge for short (<=3 days) or long (>=8 days) rest.
+  Day/night is shown as context, not given a numeric weight - no
+  well-established free-data effect size for that alone. Weather is
+  deliberately **not** included - no free, reliable per-game weather source
+  is wired into this pipeline, and inventing a "cold game" effect without
+  real temperature data would be exactly the kind of fabricated precision
+  the "Scope note" above already declines to do elsewhere.
+
+**Known limitations (v1):** market-line comparison is unimplemented - The
+Odds API's free-tier support for a first-inning-specific market couldn't be
+verified while building this (no live key available to test against), so
+`nrfi.get_nrfi_odds()` is written defensively but unused; the tab shows
+model probability only for now. NRFI picks also aren't yet logged into
+`predictions_log.jsonl` / graded by `backtest.py` the way the main model's
+picks are - that needs a way to determine each game's actual 1st-inning
+score after the fact (a linescore fetch this hasn't been wired up for yet),
+so there's no accuracy track record for this model yet, unlike the main one.
+
 ## Ideas for next steps
 
 - Once `backtest.py` has enough resolved predictions (100+), check

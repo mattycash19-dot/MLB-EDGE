@@ -5,6 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import backtest
+import nrfi
 
 OUT_DIR = os.path.dirname(__file__)
 CHANGELOG_PATH = os.path.join(OUT_DIR, "model_changelog.json")
@@ -525,6 +526,89 @@ def _improvements_html():
     return f'<div class="ideas">{items}</div>'
 
 
+def _nrfi_row(g):
+    """
+    One game's NRFI card. Built from the three real-data factors in nrfi.py
+    (Inning Split, Order Check, Rust Factor) - framed from the vault note
+    on NRFI prompt templates (70-learning/sports-betting/
+    001-nrfi-ai-prompt-templates.md): don't trust a season aggregate for
+    something this situation-specific, and say plainly when a piece isn't
+    available rather than guessing. No market comparison yet - see nrfi.py's
+    module docstring for why.
+    """
+    n = g.get("nrfi")
+    if not n:
+        err = g.get("nrfi_error")
+        note = f" ({err})" if err else ""
+        return f"""
+        <div class="nrfi-card">
+          <div class="nrfi-head"><span class="nrfi-matchup">{g['away_team']} @ {g['home_team']}</span>
+          <span class="muted">NRFI data unavailable{note}</span></div>
+        </div>
+        """
+
+    pct = n["nrfi_prob"] * 100
+    tier = "high" if pct >= 58 else ("low" if pct <= 45 else "")
+    away_short, home_short = g["away_team"].split()[-1], g["home_team"].split()[-1]
+
+    def _poss(name):
+        # almost every MLB nickname ends in "s" (Braves, Mets, Rangers...) -
+        # "Braves's" reads as a typo; the standard English rule for a
+        # plural already ending in s is just a trailing apostrophe.
+        return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+    order_bits = []
+    if n.get("away_lineup_obp") is not None:
+        order_bits.append(f"{_poss(away_short)} top order: {n['away_lineup_obp']:.3f} OBP (faces {home_short} starter)")
+    if n.get("home_lineup_obp") is not None:
+        order_bits.append(f"{_poss(home_short)} top order: {n['home_lineup_obp']:.3f} OBP (faces {away_short} starter)")
+    order_note = "; ".join(order_bits) if order_bits else "Lineups not posted yet - Order Check not applied"
+
+    def _rest_note(days, label):
+        if days is None:
+            return f"{label}: no prior start found"
+        if days <= nrfi.SHORT_REST_DAYS:
+            return f"{label}: {days}d rest (short - flagged)"
+        if days >= nrfi.LONG_REST_DAYS:
+            return f"{label}: {days}d rest (long - flagged)"
+        return f"{label}: {days}d rest (normal)"
+
+    return f"""
+    <div class="nrfi-card">
+      <div class="nrfi-head">
+        <span class="nrfi-matchup">{g['away_team']} @ {g['home_team']}</span>
+        <span class="nrfi-prob {tier}">{pct:.0f}% NRFI</span>
+      </div>
+      <div class="nrfi-bar"><div class="seg-nrfi" style="width:{pct:.1f}%"></div><div class="seg-yrfi" style="width:{100-pct:.1f}%"></div></div>
+      <div class="nrfi-factors">
+        <div><b>Inning Split</b><br>{away_short} starter 1st-inn: {n['away_starter_1st_rate']:.2f} runs/start{f" ({n['away_starter_1st_starts']} starts)" if n.get('away_starter_1st_starts') else " (season avg fallback)"}<br>{home_short} starter 1st-inn: {n['home_starter_1st_rate']:.2f} runs/start{f" ({n['home_starter_1st_starts']} starts)" if n.get('home_starter_1st_starts') else " (season avg fallback)"}</div>
+        <div><b>Order Check</b><br>{order_note}</div>
+        <div><b>Rust Factor</b><br>{_rest_note(n.get('away_starter_rest_days'), away_short)}<br>{_rest_note(n.get('home_starter_rest_days'), home_short)}</div>
+      </div>
+    </div>
+    """
+
+
+def _nrfi_tab_html(report):
+    games = [g for g in report["games"] if g.get("abstract_state") != "Final"]
+    if not games:
+        return '<p class="an-empty">No games left today.</p>'
+    rows = "".join(_nrfi_row(g) for g in games)
+    return f"""
+    <div class="an-section">
+      <div class="legend-title">No Run First Inning</div>
+      <p class="an-note">Framed from three "how to actually check this" prompt templates (Inning Split,
+      Rust Factor, Order Check) rather than trusting a pitcher's season ERA at face value. Each factor
+      below is real MLB data - a pitcher's actual first-inning-specific stat line, his real days of rest,
+      and (when posted - usually not until 1-3hrs before first pitch) today's actual top-of-order hitters'
+      season OBP. No market odds comparison yet - unverified whether a first-inning line is even available
+      on this site's Odds API plan, so this is model probability only for now, same as the main tab shows
+      before an odds key is configured.</p>
+      {rows}
+    </div>
+    """
+
+
 def _analysis_tab_html():
     return f"""
     <div class="an-section">
@@ -686,6 +770,7 @@ def render(report, out_path=None):
   .tab-input {{ position: absolute; opacity: 0; pointer-events: none; }}
   .tab-panel {{ display: none; }}
   #tab-today:checked ~ .panel-today {{ display: block; }}
+  #tab-nrfi:checked ~ .panel-nrfi {{ display: block; }}
   #tab-analysis:checked ~ .panel-analysis {{ display: block; }}
   .tabnav {{
     display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border);
@@ -697,10 +782,36 @@ def render(report, out_path=None):
   }}
   .tab-label:hover {{ color: var(--text); }}
   #tab-today:checked ~ .tabnav label[for="tab-today"],
+  #tab-nrfi:checked ~ .tabnav label[for="tab-nrfi"],
   #tab-analysis:checked ~ .tabnav label[for="tab-analysis"] {{
     color: var(--text); border-bottom-color: var(--accent);
   }}
   .tab-input:focus-visible ~ .tabnav label {{ outline: 2px solid var(--ring); outline-offset: 2px; }}
+
+  /* ---------- NRFI tab ---------- */
+  .nrfi-card {{
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    padding: var(--sp-4) var(--sp-5); margin-bottom: 10px;
+  }}
+  .nrfi-head {{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }}
+  .nrfi-matchup {{ font-family: var(--font-display); font-size: 16px; color: var(--text); }}
+  .nrfi-prob {{
+    font-family: var(--font-data); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }}
+  .nrfi-prob.high {{ color: var(--pos); }}
+  .nrfi-prob.low {{ color: var(--neg); }}
+  .nrfi-bar {{
+    display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 10px;
+    background: var(--border); max-width: 260px;
+  }}
+  .nrfi-bar .seg-nrfi {{ background: var(--pos); }}
+  .nrfi-bar .seg-yrfi {{ background: var(--neg); opacity: 0.7; }}
+  .nrfi-factors {{
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 20px;
+    font-size: 12.5px; color: var(--muted); line-height: 1.6;
+  }}
+  .nrfi-factors b {{ color: var(--text); }}
+  .nrfi-note {{ margin-top: 8px; font-size: 11.5px; color: var(--muted); font-style: italic; }}
 
   /* ---------- analysis tab ---------- */
   .an-section {{ margin-bottom: var(--sp-7); }}
@@ -965,9 +1076,11 @@ def render(report, out_path=None):
     </div>
 
     <input type="radio" name="tabs" id="tab-today" class="tab-input" checked>
+    <input type="radio" name="tabs" id="tab-nrfi" class="tab-input">
     <input type="radio" name="tabs" id="tab-analysis" class="tab-input">
     <div class="tabnav">
       <label for="tab-today" class="tab-label">Today's Slate</label>
+      <label for="tab-nrfi" class="tab-label">NRFI</label>
       <label for="tab-analysis" class="tab-label">Analysis</label>
     </div>
 
@@ -1006,6 +1119,10 @@ def render(report, out_path=None):
         <p class="disclaimer">This is a probability/edge estimate for research purposes, not a guarantee — treat it as one input, not an answer. Starting pitcher FIP is season-to-date, not adjusted for the specific matchup or recent form.</p>
       </div>
 
+    </div>
+
+    <div class="tab-panel panel-nrfi">
+      {_nrfi_tab_html(report)}
     </div>
 
     <div class="tab-panel panel-analysis">

@@ -114,6 +114,32 @@ def get_all_teams_stats(team_ids=None, season=None):
     return stats
 
 
+def get_lineups(game_date=None):
+    """
+    Returns {game_pk: {"home": [...], "away": [...]}} of today's actual
+    posted batting orders (each side's hitters, in real batting-order
+    sequence per MLB's API) for games where a lineup has been posted yet.
+    MLB typically posts lineups 1-3 hours before first pitch, so this is
+    routinely empty for games still hours away - an empty list for a side
+    means "not posted yet", not an error; callers (see nrfi.py's Order
+    Check) should skip that adjustment rather than guess at a fallback.
+    """
+    game_date = game_date or date.today().isoformat()
+    url = f"{BASE}/schedule?sportId=1&date={game_date}&hydrate=lineups"
+    data = _get(url)
+    result = {}
+    for d in data.get("dates", []):
+        for g in d.get("games", []):
+            if g.get("gameType") != "R":
+                continue
+            lineups = g.get("lineups", {})
+            result[g["gamePk"]] = {
+                "home": lineups.get("homePlayers", []),
+                "away": lineups.get("awayPlayers", []),
+            }
+    return result
+
+
 def get_team_recent_form(team_id, all_teams_stats=None, season=None):
     """
     Returns {"streak_code": "W3"/"L2"/etc, "last_ten": "7-3"} for one team,

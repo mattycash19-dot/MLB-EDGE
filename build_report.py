@@ -34,6 +34,7 @@ import pitching
 import park_factors
 import line_movement
 import writeup
+import nrfi
 
 OUT_DIR = os.path.dirname(__file__)
 
@@ -77,11 +78,16 @@ def build(game_date=None, include_pitching=True):
     stats_by_team = mlb_data.get_all_teams_stats(team_ids)
 
     probable_pitchers = {}
+    lineups_by_game = {}
     if include_pitching:
         try:
             probable_pitchers = pitching.get_probable_pitchers(game_date)
         except Exception:
             probable_pitchers = {}
+        try:
+            lineups_by_game = mlb_data.get_lineups(game_date)
+        except Exception:
+            lineups_by_game = {}
 
     odds_events = []
     odds_error = None
@@ -146,11 +152,11 @@ def build(game_date=None, include_pitching=True):
         home_recent_form = mlb_data.get_team_recent_form(g["home_id"], all_teams_stats=stats_by_team)
         away_recent_form = mlb_data.get_team_recent_form(g["away_id"], all_teams_stats=stats_by_team)
 
+        home_pitcher_info = probable_pitchers.get(g["game_pk"], {}).get("home")
+        away_pitcher_info = probable_pitchers.get(g["game_pk"], {}).get("away")
+
         if include_pitching:
             try:
-                home_pitcher_info = probable_pitchers.get(g["game_pk"], {}).get("home")
-                away_pitcher_info = probable_pitchers.get(g["game_pk"], {}).get("away")
-
                 home_ra9, home_starter_name, home_starter_fip, home_bp_era, home_starter_stats = _team_pitching_ra9(
                     g["home_id"], home_pitcher_info, bullpen_cache)
                 away_ra9, away_starter_name, away_starter_fip, away_bp_era, away_starter_stats = _team_pitching_ra9(
@@ -188,6 +194,27 @@ def build(game_date=None, include_pitching=True):
             except Exception as e:
                 # if pitching data fails for this game, keep the season-only numbers already set
                 entry["pitching_error"] = str(e)
+
+        if include_pitching:
+            try:
+                home_pitcher_id = home_pitcher_info["id"] if home_pitcher_info else None
+                away_pitcher_id = away_pitcher_info["id"] if away_pitcher_info else None
+                home_1st = nrfi.get_first_inning_split(home_pitcher_id) if home_pitcher_id else None
+                away_1st = nrfi.get_first_inning_split(away_pitcher_id) if away_pitcher_id else None
+                home_rest = nrfi.get_days_rest(home_pitcher_id, game_date) if home_pitcher_id else None
+                away_rest = nrfi.get_days_rest(away_pitcher_id, game_date) if away_pitcher_id else None
+
+                lu = lineups_by_game.get(g["game_pk"], {"home": [], "away": []})
+                home_lineup_obp, _home_n = nrfi.get_lineup_top_order_obp(lu["home"])
+                away_lineup_obp, _away_n = nrfi.get_lineup_top_order_obp(lu["away"])
+
+                entry["nrfi"] = nrfi.combined_nrfi_probability(
+                    home_1st, away_1st,
+                    home_lineup_obp=home_lineup_obp, away_lineup_obp=away_lineup_obp,
+                    home_starter_rest=home_rest, away_starter_rest=away_rest,
+                )
+            except Exception as e:
+                entry["nrfi_error"] = str(e)
 
         entry["home_recent_form"] = home_recent_form
         entry["away_recent_form"] = away_recent_form
