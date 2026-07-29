@@ -161,6 +161,8 @@ couldn't be diagnosed after the fact) has something to actually check.
 - `dashboard.py` — renders `report.json` into `dashboard.html`
 - `backtest.py` — logs predictions, reconciles against results, checks calibration, generates postmortems
 - `model_changelog.json` — dated log of model/code changes, shown on the dashboard's Analysis tab
+- `nrfi.py` — the separate NRFI (No Run First Inning) model: Inning Split, Order Check, Rust Factor
+- `nrfi_backtest.py` — logs NRFI predictions, reconciles against real 1st-inning scores, track record
 - `run_daily.py` — the script you actually run
 
 ## Verified live (2026-07-27 slate, real API key)
@@ -239,15 +241,20 @@ these were built from). All three factors are real, free MLB data:
   real temperature data would be exactly the kind of fabricated precision
   the "Scope note" above already declines to do elsewhere.
 
-**Known limitations (v1):** market-line comparison is unimplemented - The
+**Tracking:** every NRFI pick is logged to `nrfi_log.jsonl` with its full
+factor breakdown (`nrfi_backtest.log_predictions()`), then reconciled
+against the real 1st-inning score from MLB's linescore endpoint
+(`nrfi_backtest.reconcile()`, via `nrfi.get_linescore_first_inning()`) -
+notably, this resolves as soon as a game's 1st inning ends, not the whole
+game, so NRFI history builds up much faster than the main model's does.
+Track record + per-pick postmortems show on the NRFI tab, mirroring the
+main Analysis tab.
+
+**Known limitation (v1):** market-line comparison is unimplemented - The
 Odds API's free-tier support for a first-inning-specific market couldn't be
 verified while building this (no live key available to test against), so
 `nrfi.get_nrfi_odds()` is written defensively but unused; the tab shows
-model probability only for now. NRFI picks also aren't yet logged into
-`predictions_log.jsonl` / graded by `backtest.py` the way the main model's
-picks are - that needs a way to determine each game's actual 1st-inning
-score after the fact (a linescore fetch this hasn't been wired up for yet),
-so there's no accuracy track record for this model yet, unlike the main one.
+model probability only for now.
 
 ## Ideas for next steps
 

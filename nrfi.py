@@ -246,3 +246,29 @@ def get_nrfi_odds(event):
             if market.get("key") in ("h2h_1st_1_innings", "totals_1st_1_innings"):
                 return market
     return None
+
+
+def get_linescore_first_inning(game_pk):
+    """
+    Real per-inning score for game_pk's 1st inning, from MLB's live
+    linescore endpoint - a small, dedicated call (not the full game feed).
+    Returns (home_runs, away_runs) once the 1st inning is actually
+    complete (both halves played), or None if it isn't yet or the data is
+    unavailable. Deliberately does NOT wait for the whole game to reach
+    'Final' - a NRFI/YRFI result is knowable as soon as the 1st inning
+    ends (currentInning advances to 2+), often 15-20 minutes into a game,
+    which is why nrfi_backtest.reconcile() can resolve picks much sooner
+    than backtest.reconcile() resolves the main model's game-winner picks.
+    """
+    data = pitching._get(f"{pitching.BASE}/game/{game_pk}/linescore")
+    current_inning = data.get("currentInning") or 0
+    if current_inning < 2:
+        return None  # 1st inning not fully complete yet (game hasn't reached the 2nd)
+    first = next((i for i in data.get("innings", []) if i.get("num") == 1), None)
+    if not first:
+        return None
+    home_runs = first.get("home", {}).get("runs")
+    away_runs = first.get("away", {}).get("runs")
+    if home_runs is None or away_runs is None:
+        return None
+    return home_runs, away_runs

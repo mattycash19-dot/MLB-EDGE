@@ -13,6 +13,9 @@ Output:
     dashboard.html      - open this in a browser to see today's games
     predictions_log.jsonl - accumulating log of every prediction made, for
                             later calibration checking (see backtest.py)
+    nrfi_log.jsonl         - same idea, for the separate NRFI model (see
+                            nrfi.py / nrfi_backtest.py) - resolves faster
+                            since a NRFI pick only needs the 1st inning
     odds_history.jsonl    - accumulating log of odds snapshots, for line
                             movement tracking (see line_movement.py)
 
@@ -39,6 +42,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import build_report
 import dashboard
 import backtest
+import nrfi_backtest
 
 
 def main():
@@ -46,6 +50,14 @@ def main():
     try:
         n_resolved = backtest.reconcile()
         print(f"  Newly resolved: {n_resolved}")
+    except Exception as e:
+        print(f"  Skipped (couldn't reconcile: {e})")
+
+    print("Reconciling NRFI predictions (resolves as soon as a game's 1st inning ends, "
+          "not the whole game)...")
+    try:
+        n_nrfi_resolved = nrfi_backtest.reconcile()
+        print(f"  Newly resolved: {n_nrfi_resolved}")
     except Exception as e:
         print(f"  Skipped (couldn't reconcile: {e})")
 
@@ -61,6 +73,12 @@ def main():
             print(f"Upgraded {n_upgraded} earlier ungraded picks now that market odds are available.")
     except Exception as e:
         print(f"Could not log predictions: {e}")
+
+    try:
+        n_nrfi_logged = nrfi_backtest.log_predictions(report)
+        print(f"Logged {n_nrfi_logged} new NRFI predictions.")
+    except Exception as e:
+        print(f"Could not log NRFI predictions: {e}")
 
     print(f"\n{len(report['games'])} games for {report['date']}")
     if report["odds_available"]:

@@ -34,17 +34,17 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python run_daily.py
 
-      # report.json / predictions_log.jsonl / odds_history.jsonl are the
-      # durable state that makes track record + line movement work across
-      # scheduled runs - each run starts from a fresh checkout, so without
-      # committing these back, every run would look like the first run of
-      # the day. dashboard.html is *not* committed - it's build output,
-      # deployed straight to Pages below.
+      # report.json / predictions_log.jsonl / odds_history.jsonl / nrfi_log.jsonl
+      # are the durable state that makes track record + line movement work
+      # across scheduled runs - each run starts from a fresh checkout, so
+      # without committing these back, every run would look like the first
+      # run of the day. dashboard.html is *not* committed - it's build
+      # output, deployed straight to Pages below.
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add report.json predictions_log.jsonl odds_history.jsonl
+          git add report.json predictions_log.jsonl odds_history.jsonl nrfi_log.jsonl
           git diff --cached --quiet || git commit -m "Refresh data $(date -u +'%Y-%m-%d %H:%M UTC')"
           # The `concurrency: group: pages` block above mostly keeps runs from
           # overlapping, but a schedule + manual trigger landing seconds apart

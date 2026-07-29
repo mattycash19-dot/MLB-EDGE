@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 import backtest
 import nrfi
+import nrfi_backtest
 
 OUT_DIR = os.path.dirname(__file__)
 CHANGELOG_PATH = os.path.join(OUT_DIR, "model_changelog.json")
@@ -589,11 +590,48 @@ def _nrfi_row(g):
     """
 
 
+def _nrfi_track_record_html():
+    try:
+        tr = nrfi_backtest.compute_track_record()
+    except Exception as e:
+        return f'<p class="an-empty">NRFI track record unavailable: {e}</p>'
+    if tr["n"] == 0:
+        return ('<p class="an-empty">No resolved NRFI picks yet - check back after today\'s first '
+                'games finish their 1st inning (this resolves much faster than the main model - no '
+                'need to wait for a whole game to end).</p>')
+    tiles = _tile(f"{tr['wins']}-{tr['losses']} ({tr['win_pct']*100:.0f}%)", "Record")
+    tiles += _tile(f"{tr['observed_nrfi_rate']*100:.0f}%", "Observed NRFI Rate")
+    return (f'<div class="tiles">{tiles}</div>'
+            f'<p class="an-note">Observed NRFI rate is a sanity check against MLB\'s historical '
+            f'~50-52% league-wide rate, independent of whether the picks themselves are winning - '
+            f'if this drifts far off with enough sample, something in the model or data may be off, '
+            f'not just the picks.</p>')
+
+
+def _nrfi_postmortems_html():
+    try:
+        posts = nrfi_backtest.generate_postmortems()
+    except Exception as e:
+        return f'<p class="an-empty">NRFI postmortems unavailable: {e}</p>'
+    if not posts:
+        return ""
+    rows = "".join(f"""
+      <div class="pm-row {'pm-correct' if p['correct'] else 'pm-incorrect'}">
+        <div class="pm-head">
+          <span class="pm-date">{p['date']}</span>
+          <span class="pm-matchup">{p['matchup']}</span>
+          <span class="pm-mark">{'correct' if p['correct'] else 'incorrect'}</span>
+        </div>
+        <div class="pm-pick">Predicted <b>{p['predicted_side']}</b> ({p['nrfi_prob']*100:.0f}% NRFI)</div>
+        <div class="pm-explain">{p['explanation']}</div>
+      </div>
+    """ for p in posts)
+    return f'<div class="an-subhead">Resolved picks</div><div class="postmortems">{rows}</div>'
+
+
 def _nrfi_tab_html(report):
     games = [g for g in report["games"] if g.get("abstract_state") != "Final"]
-    if not games:
-        return '<p class="an-empty">No games left today.</p>'
-    rows = "".join(_nrfi_row(g) for g in games)
+    rows = "".join(_nrfi_row(g) for g in games) if games else '<p class="an-empty">No games left today.</p>'
     return f"""
     <div class="an-section">
       <div class="legend-title">No Run First Inning</div>
@@ -604,6 +642,12 @@ def _nrfi_tab_html(report):
       season OBP. No market odds comparison yet - unverified whether a first-inning line is even available
       on this site's Odds API plan, so this is model probability only for now, same as the main tab shows
       before an odds key is configured.</p>
+      {_nrfi_track_record_html()}
+      {_nrfi_postmortems_html()}
+    </div>
+
+    <div class="an-section">
+      <div class="legend-title">Today's NRFI picks</div>
       {rows}
     </div>
     """
