@@ -599,22 +599,45 @@ def _nrfi_track_record_html():
         return ('<p class="an-empty">No resolved NRFI picks yet - check back after today\'s first '
                 'games finish their 1st inning (this resolves much faster than the main model - no '
                 'need to wait for a whole game to end).</p>')
+
+    def _rec_str(stats):
+        w, l = stats["wins"], stats["losses"]
+        if w + l == 0:
+            return "—"
+        pct = f" ({stats['win_pct']*100:.0f}%)" if stats["win_pct"] is not None else ""
+        return f"{w}-{l}{pct}"
+
     tiles = _tile(f"{tr['wins']}-{tr['losses']} ({tr['win_pct']*100:.0f}%)", "Record")
     tiles += _tile(f"{tr['observed_nrfi_rate']*100:.0f}%", "Observed NRFI Rate")
+    for t in tr.get("by_tier", []):
+        tiles += _tile(_rec_str(t), t["tier"])
     return (f'<div class="tiles">{tiles}</div>'
             f'<p class="an-note">Observed NRFI rate is a sanity check against MLB\'s historical '
             f'~50-52% league-wide rate, independent of whether the picks themselves are winning - '
             f'if this drifts far off with enough sample, something in the model or data may be off, '
-            f'not just the picks.</p>')
+            f'not just the picks. Confidence tiers bucket every resolved pick by how far the model\'s '
+            f'own probability leaned from a 50/50 coin flip (there\'s no market line to compare '
+            f'against yet, unlike the main model\'s edge-based tiers) - computed fresh from the full '
+            f'history each time, so a tier reflects every resolved pick logged so far, not just new '
+            f'ones. Treat any tier under ~20 picks as not yet meaningful.</p>')
 
 
 def _nrfi_postmortems_html():
+    """
+    Shows only the most recent resolved day's picks, not the full history -
+    this is meant as a quick "how'd yesterday go" check, not a scrolling
+    archive. The full history is still there in nrfi_log.jsonl and factored
+    into the track record / confidence tiers above regardless of what's
+    shown here.
+    """
     try:
         posts = nrfi_backtest.generate_postmortems()
     except Exception as e:
         return f'<p class="an-empty">NRFI postmortems unavailable: {e}</p>'
     if not posts:
         return ""
+    latest_date = posts[0]["date"]  # generate_postmortems() sorts newest-first
+    posts = [p for p in posts if p["date"] == latest_date]
     rows = "".join(f"""
       <div class="pm-row {'pm-correct' if p['correct'] else 'pm-incorrect'}">
         <div class="pm-head">
@@ -626,7 +649,7 @@ def _nrfi_postmortems_html():
         <div class="pm-explain">{p['explanation']}</div>
       </div>
     """ for p in posts)
-    return f'<div class="an-subhead">Resolved picks</div><div class="postmortems">{rows}</div>'
+    return f'<div class="an-subhead">Previous day\'s results ({latest_date})</div><div class="postmortems">{rows}</div>'
 
 
 def _nrfi_tab_html(report):
@@ -643,12 +666,15 @@ def _nrfi_tab_html(report):
       on this site's Odds API plan, so this is model probability only for now, same as the main tab shows
       before an odds key is configured.</p>
       {_nrfi_track_record_html()}
-      {_nrfi_postmortems_html()}
     </div>
 
     <div class="an-section">
       <div class="legend-title">Today's NRFI picks</div>
       {rows}
+    </div>
+
+    <div class="an-section">
+      {_nrfi_postmortems_html()}
     </div>
     """
 

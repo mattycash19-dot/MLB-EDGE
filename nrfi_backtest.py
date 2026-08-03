@@ -119,7 +119,23 @@ def reconcile(path=LOG_PATH):
     return newly_resolved
 
 
-def compute_track_record(path=LOG_PATH):
+# Confidence tiers, checked high-to-low against each pick's distance from a
+# 50/50 coin flip. There's no market line to compare against yet (see
+# nrfi.py / README - unverified whether this site's Odds API plan even
+# offers a first-inning market), so "confidence" here is the model's own
+# probability lean, not edge vs. a real price the way the main model's
+# tiers work. Thresholds picked from the actual observed distribution of
+# nrfi_prob across logged picks (median lean ~13.5pts, 75th percentile
+# ~22.6pts) rather than copied blindly from the main model's edge-vs-market
+# tiers, which measure a different thing.
+CONFIDENCE_TIERS = [
+    (20.0, "High confidence (20+ pt lean)"),
+    (10.0, "Medium confidence (10-20 pt lean)"),
+    (0.0, "Low confidence (0-10 pt lean)"),
+]
+
+
+def compute_track_record(path=LOG_PATH, tiers=CONFIDENCE_TIERS):
     """
     Was the side actually favored (NRFI if nrfi_prob>=0.5, else YRFI) the
     side that actually happened? Also reports the observed NRFI rate
@@ -127,19 +143,42 @@ def compute_track_record(path=LOG_PATH):
     ~50-52% league-wide rate - if this drifts far from that with enough
     sample, it's a signal something in the model or the data is off,
     independent of whether the picks themselves are winning.
+
+    Also buckets the record by confidence tier (see CONFIDENCE_TIERS above),
+    computed fresh from every resolved pick already in the log each time
+    this runs - so a newly added tier immediately reflects the full history
+    already collected, not just picks logged going forward.
     """
     records = [r for r in _read_all(path) if r.get("resolved") and r.get("actual_result")]
     n = len(records)
     if n == 0:
-        return {"n": 0, "wins": 0, "losses": 0, "win_pct": None, "observed_nrfi_rate": None}
+        return {"n": 0, "wins": 0, "losses": 0, "win_pct": None, "observed_nrfi_rate": None, "by_tier": []}
     wins = sum(1 for r in records if r["predicted_side"] == r["actual_result"])
     nrfi_count = sum(1 for r in records if r["actual_result"] == "NRFI")
+
+    tier_stats = {name: {"wins": 0, "losses": 0} for _, name in tiers}
+    for r in records:
+        correct = r["predicted_side"] == r["actual_result"]
+        lean = abs(r["nrfi_prob"] - 0.5) * 100
+        for threshold, name in tiers:
+            if lean >= threshold:
+                tier_stats[name]["wins" if correct else "losses"] += 1
+                break
+
+    def _tier_pct(stats):
+        total = stats["wins"] + stats["losses"]
+        return round(stats["wins"] / total, 3) if total else None
+
     return {
         "n": n,
         "wins": wins,
         "losses": n - wins,
         "win_pct": round(wins / n, 3),
         "observed_nrfi_rate": round(nrfi_count / n, 3),
+        "by_tier": [
+            {"tier": name, **tier_stats[name], "win_pct": _tier_pct(tier_stats[name])}
+            for _, name in tiers
+        ],
     }
 
 
