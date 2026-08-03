@@ -173,7 +173,7 @@ def reconcile(path=LOG_PATH):
         by_pk = {}
         for day in data.get("dates", []):
             for g in day.get("games", []):
-                if g["status"]["abstractGameState"] != "Final":
+                if g["status"].get("codedGameState") != "F":
                     continue
                 home = g["teams"]["home"]
                 away = g["teams"]["away"]
@@ -184,6 +184,7 @@ def reconcile(path=LOG_PATH):
         results_by_date[d] = by_pk
 
     newly_resolved = 0
+    still_unresolved = []
     for r in records:
         if r["resolved"]:
             continue
@@ -191,6 +192,37 @@ def reconcile(path=LOG_PATH):
         if result is not None:
             r["resolved"] = True
             r["home_won"] = result
+            newly_resolved += 1
+        else:
+            still_unresolved.append(r)
+
+    # A postponed/suspended game gets resumed on a LATER date under the
+    # SAME gamePk. The date-keyed lookup above only ever looks at each
+    # record's original date, so a resumed game's real Final result -
+    # which lands under a different date - is invisible to it, and the
+    # pick is stuck "unresolved" forever even after the game is long over.
+    # (Also why the check above now keys off codedGameState=="F" rather
+    # than abstractGameState=="Final" - MLB's API marks a postponed game's
+    # OWN entry abstractGameState:"Final" too, with codedGameState:"D" for
+    # discontinued; the old check let that entry through, though it never
+    # produced a usable isWinner/score so it stayed accidentally harmless.)
+    # Querying by gamePk directly returns every date's entry for that one
+    # game, including the resumption's real Final status wherever it landed.
+    for r in still_unresolved:
+        data = _get(f"{BASE}/schedule?gamePk={r['game_pk']}")
+        home_won = None
+        for day in data.get("dates", []):
+            for g in day.get("games", []):
+                if g["gamePk"] != r["game_pk"] or g["status"].get("codedGameState") != "F":
+                    continue
+                home = g["teams"]["home"]
+                away = g["teams"]["away"]
+                home_won = home.get("isWinner")
+                if home_won is None and "score" in home and "score" in away:
+                    home_won = home["score"] > away["score"]
+        if home_won is not None:
+            r["resolved"] = True
+            r["home_won"] = home_won
             newly_resolved += 1
 
     _write_all(records, path)
