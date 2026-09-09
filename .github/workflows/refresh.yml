@@ -10,16 +10,15 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # Second safety net (see comment below the commit step) - a hung run
+    # dies on its own instead of blocking this job's own concurrency group.
+    timeout-minutes: 15
+    concurrency:
+      group: mlb-edge-data-refresh
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,19 +38,34 @@ jobs:
       # across scheduled runs - each run starts from a fresh checkout, so
       # without committing these back, every run would look like the first
       # run of the day. dashboard.html is *not* committed - it's build
-      # output, deployed straight to Pages below.
+      # output, handed to the deploy job below via an artifact instead.
+      #
+      # This job deliberately does NOT declare `environment: github-pages`
+      # and uses its own concurrency group, separate from the deploy job's.
+      # On 2026-08-06 a single stuck github-pages deployment held that
+      # environment's concurrency lock for an entire month (it didn't clear
+      # until 2026-09-05, ~30 days later - looks like a GitHub-side orphan
+      # timeout, not anything this repo did). Every scheduled run in
+      # between queued behind it in the Pages environment and got
+      # cancelled the moment the next scheduled run superseded it, before
+      # run_daily.py ever executed - so no predictions got logged for a
+      # month even though the cron fired the whole time. Decoupling data
+      # logging from the Pages deploy means a hung deploy can now only
+      # block future *deploys*, never data collection. timeout-minutes
+      # above is the other half of the fix: even this job's own lock can't
+      # be held indefinitely by a hung run.
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add report.json predictions_log.jsonl odds_history.jsonl nrfi_log.jsonl
           git diff --cached --quiet || git commit -m "Refresh data $(date -u +'%Y-%m-%d %H:%M UTC')"
-          # The `concurrency: group: pages` block above mostly keeps runs from
-          # overlapping, but a schedule + manual trigger landing seconds apart
-          # can still both check out before either pushes - the second run's
-          # push is then rejected as non-fast-forward. These are pure data
-          # files regenerated fresh each run (not hand-edited), so a rebase
-          # onto whatever the other run just pushed is always safe here.
+          # The concurrency group above mostly keeps runs from overlapping,
+          # but a schedule + manual trigger landing seconds apart can still
+          # both check out before either pushes - the second run's push is
+          # then rejected as non-fast-forward. These are pure data files
+          # regenerated fresh each run (not hand-edited), so a rebase onto
+          # whatever the other run just pushed is always safe here.
           for i in 1 2 3 4 5; do
             git push && break
             echo "Push rejected (attempt $i/5) - another run pushed first. Rebasing and retrying..."
@@ -60,10 +74,37 @@ jobs:
             sleep $((RANDOM % 8 + 2))
           done
 
+      - name: Upload dashboard for deploy job
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-html
+          path: dashboard.html
+          retention-days: 1
+
+  deploy:
+    needs: refresh
+    runs-on: ubuntu-latest
+    # If the github-pages environment lock ever gets stuck again, this
+    # bounds how long a single deploy attempt can hold it - it can no
+    # longer wedge the queue for weeks the way the 2026-08-06 incident did.
+    timeout-minutes: 10
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download dashboard from refresh job
+        uses: actions/download-artifact@v4
+        with:
+          name: dashboard-html
+          path: _site_src
+
       - name: Prepare Pages output
         run: |
           mkdir -p _site
-          cp dashboard.html _site/index.html
+          cp _site_src/dashboard.html _site/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -73,4 +114,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
