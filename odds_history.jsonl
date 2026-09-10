@@ -1923,3 +1923,8 @@
 {"logged_at": "2026-09-09T22:27:07.285342", "game_date": "2026-09-09", "game_pk": 824549, "home_team": "Chicago White Sox", "away_team": "Pittsburgh Pirates", "home_prob": 0.5, "away_prob": 0.5}
 {"logged_at": "2026-09-09T22:27:11.440900", "game_date": "2026-09-09", "game_pk": 823739, "home_team": "Milwaukee Brewers", "away_team": "Chicago Cubs", "home_prob": 0.5474610789029846, "away_prob": 0.45253892109701543}
 {"logged_at": "2026-09-09T22:27:15.936305", "game_date": "2026-09-09", "game_pk": 823900, "home_team": "Los Angeles Dodgers", "away_team": "Cincinnati Reds", "home_prob": 0.7111566607037785, "away_prob": 0.28884333929622147}
+{"logged_at": "2026-09-10T00:30:33.146200", "game_date": "2026-09-10", "game_pk": 824872, "home_team": "Atlanta Braves", "away_team": "Tampa Bay Rays", "home_prob": 0.5183879993265689, "away_prob": 0.4816120006734312}
+{"logged_at": "2026-09-10T00:30:35.877375", "game_date": "2026-09-10", "game_pk": 823413, "home_team": "Philadelphia Phillies", "away_team": "Houston Astros", "home_prob": 0.6056237513404509, "away_prob": 0.3943762486595491}
+{"logged_at": "2026-09-10T00:30:38.892916", "game_date": "2026-09-10", "game_pk": 823088, "home_team": "Seattle Mariners", "away_team": "Texas Rangers", "home_prob": 0.5426161942814315, "away_prob": 0.45738380571856857}
+{"logged_at": "2026-09-10T00:30:41.405828", "game_date": "2026-09-10", "game_pk": 823499, "home_team": "New York Yankees", "away_team": "Colorado Rockies", "home_prob": 0.7396049551005405, "away_prob": 0.2603950448994596}
+{"logged_at": "2026-09-10T00:30:43.781184", "game_date": "2026-09-10", "game_pk": 824550, "home_team": "Chicago White Sox", "away_team": "Pittsburgh Pirates", "home_prob": 0.5, "away_prob": 0.5}
