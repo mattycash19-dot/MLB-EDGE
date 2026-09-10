@@ -19,6 +19,45 @@ numbers as one input among many, not an answer. Sports betting carries real
 financial risk — never bet more than you can afford to lose, and if it stops
 feeling fun, that's worth paying attention to.
 
+## Bankroll / staking policy (decided 2026-09-09, before any real money is on this)
+
+This project's founding note listed "decide on bankroll/staking rules before
+real money" as a pre-code step that never got resolved. As of 2026-09-09 this
+is still tracking-only — no real bets have been placed on its picks — so this
+is written down now, before that changes, not as after-the-fact cleanup.
+
+- **Gate on going live at all.** Don't place a real bet on any pick from this
+  dashboard until both hold: (1) `backtest.py`'s own 100+ resolved-pick bar
+  for "real confidence" is met, and (2) no confidence tier is currently
+  flagged by `backtest.detect_patterns()` as meaningfully below breakeven.
+  As of 2026-09-09 (2) is **not** met — the high-confidence (10+ pt edge)
+  tier is 3-11 (21%) over 14 picks — though that sample is thinner than it
+  looks because a stuck GitHub Pages deployment silently blocked the pipeline
+  from running for a full month (2026-08-06 to 2026-09-05; see
+  `.github/workflows/refresh.yml`'s comments). Re-check this gate once a few
+  more real weeks of continuous data have accumulated — don't rely on
+  today's read either way.
+- **Stake size: flat, not confidence-scaled.** Every real-money bet gets the
+  same stake — a fixed unit, suggested starting point 1% of a bankroll set
+  aside specifically for this (a number you'd genuinely be fine losing
+  entirely — adjust to taste, this is a default, not a rule). No Kelly-style
+  or confidence-weighted sizing until a given tier has its own 100+
+  resolved-pick sample actually outperforming lower tiers — right now the
+  highest-confidence tier is the *worst* performer, so scaling stake to
+  confidence would currently mean betting most on the picks doing worst.
+- **Stop condition** (the piece the original note asked for and never got).
+  Once real betting starts: if a rolling 50-pick window's win rate drops
+  back below breakeven (~52.4% at standard -110 pricing), or cumulative
+  losses reach 15% of the dedicated bankroll, pause real-money betting
+  immediately, fall back to tracking-only, and treat it as a full
+  recalibration — not "wait it out."
+- **No live/in-game automation, no auto-placed bets — reaffirmed, not just
+  incidental.** The dashboard shows edge and win probability, never a
+  computed stake, and nothing here places a bet automatically. That was
+  already true by construction (`writeup.py` deliberately avoids anything
+  like a Kelly-stake number) — this makes it a stated policy instead of an
+  emergent property of what wasn't built yet.
+
 ## What it does
 
 1. Pulls today's MLB schedule from MLB's free public Stats API, and each
