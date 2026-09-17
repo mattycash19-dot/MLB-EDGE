@@ -2474,3 +2474,8 @@
 {"logged_at": "2026-09-17T20:09:28.112994", "game_date": "2026-09-17", "game_pk": 824548, "home_team": "Chicago White Sox", "away_team": "Detroit Tigers", "home_prob": 0.5136337552855755, "away_prob": 0.4863662447144244}
 {"logged_at": "2026-09-17T20:09:30.146955", "game_date": "2026-09-17", "game_pk": 822845, "home_team": "Texas Rangers", "away_team": "Boston Red Sox", "home_prob": 0.4667154927747804, "away_prob": 0.5332845072252196}
 {"logged_at": "2026-09-17T20:09:31.921588", "game_date": "2026-09-17", "game_pk": 823978, "home_team": "Los Angeles Angels", "away_team": "Minnesota Twins", "home_prob": 0.4730918602470973, "away_prob": 0.5269081397529027}
+{"logged_at": "2026-09-17T23:01:26.224631", "game_date": "2026-09-17", "game_pk": 824141, "home_team": "Houston Astros", "away_team": "Kansas City Royals", "home_prob": 0.5757936556220749, "away_prob": 0.42420634437792515}
+{"logged_at": "2026-09-17T23:01:31.316231", "game_date": "2026-09-17", "game_pk": 823573, "home_team": "New York Mets", "away_team": "Philadelphia Phillies", "home_prob": 0.5404932652958938, "away_prob": 0.4595067347041062}
+{"logged_at": "2026-09-17T23:01:36.755160", "game_date": "2026-09-17", "game_pk": 824548, "home_team": "Chicago White Sox", "away_team": "Detroit Tigers", "home_prob": 0.5534748803829156, "away_prob": 0.4465251196170844}
+{"logged_at": "2026-09-17T23:01:42.409613", "game_date": "2026-09-17", "game_pk": 822845, "home_team": "Texas Rangers", "away_team": "Boston Red Sox", "home_prob": 0.46602325407266365, "away_prob": 0.5339767459273363}
+{"logged_at": "2026-09-17T23:01:47.822275", "game_date": "2026-09-17", "game_pk": 823978, "home_team": "Los Angeles Angels", "away_team": "Minnesota Twins", "home_prob": 0.4730918602470973, "away_prob": 0.5269081397529027}
