@@ -1,6 +1,6 @@
 {
   "date": "2026-09-17",
-  "generated_at": "2026-09-17T00:50:19.254223",
+  "generated_at": "2026-09-17T05:59:41.628339",
   "games": [
     {
       "game_pk": 822845,
@@ -12,24 +12,24 @@
       "home_score": null,
       "away_record": {
         "wins": 82,
-        "losses": 69,
+        "losses": 70,
         "ties": 0,
-        "pct": ".543"
+        "pct": ".539"
       },
       "home_record": {
-        "wins": 75,
+        "wins": 76,
         "losses": 76,
         "ties": 0,
-        "pct": ".497"
+        "pct": ".500"
       },
       "venue_name": "Globe Life Field",
       "park_factor": 104,
       "home_starter": {
-        "name": null,
-        "fip": null,
-        "era": null,
-        "games_started": null,
-        "innings_pitched": null,
+        "name": "Tyler Alexander",
+        "fip": 3.01,
+        "era": 3.38,
+        "games_started": 4,
+        "innings_pitched": 66.2,
         "bullpen_era": 3.44
       },
       "away_starter": {
@@ -38,54 +38,139 @@
         "era": 2.76,
         "games_started": 27,
         "innings_pitched": 156.2,
-        "bullpen_era": 3.13
+        "bullpen_era": 3.17
       },
-      "home_model_prob_season_only": 0.4481,
-      "away_model_prob_season_only": 0.5519,
-      "home_model_prob": 0.4874,
-      "away_model_prob": 0.5126,
-      "home_market_prob": 0.37,
-      "away_market_prob": 0.63,
-      "home_market_ml": 155,
-      "away_market_ml": -202,
-      "home_model_ml": 105,
-      "away_model_ml": -105,
-      "home_edge": 0.1174,
-      "away_edge": -0.1174,
-      "home_movement": 0.0,
+      "home_model_prob_season_only": 0.4543,
+      "away_model_prob_season_only": 0.5457,
+      "home_model_prob": 0.5412,
+      "away_model_prob": 0.4588,
+      "home_market_prob": 0.4399,
+      "away_market_prob": 0.5601,
+      "home_market_ml": 119,
+      "away_market_ml": -139,
+      "home_model_ml": -118,
+      "away_model_ml": 118,
+      "home_edge": 0.1013,
+      "away_edge": -0.1013,
+      "home_movement": 0.07,
       "home_opening_ml": 170,
       "away_opening_ml": -170,
-      "num_books": 6,
-      "home_run_diff": -42,
-      "away_run_diff": 86,
-      "home_projected_runs": 3.89,
-      "away_projected_runs": 4.3,
-      "projected_run_diff": -0.42,
+      "num_books": 7,
+      "home_run_diff": -38,
+      "away_run_diff": 82,
+      "home_projected_runs": 3.91,
+      "away_projected_runs": 3.95,
+      "projected_run_diff": -0.04,
       "nrfi": {
-        "nrfi_prob": 0.6124,
-        "yrfi_prob": 0.3876,
-        "home_starter_1st_rate": 0.12,
+        "nrfi_prob": 0.6905,
+        "yrfi_prob": 0.3095,
+        "home_starter_1st_rate": 0.0,
         "away_starter_1st_rate": 0.37,
-        "home_starter_1st_starts": null,
+        "home_starter_1st_starts": 4,
         "away_starter_1st_starts": 27,
         "home_order_adj": 1.0,
         "away_order_adj": 1.0,
         "away_lineup_obp": null,
         "home_lineup_obp": null,
-        "home_starter_rest_days": null,
+        "home_starter_rest_days": 57,
         "away_starter_rest_days": 6,
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "W3",
+        "streak_code": "W4",
+        "last_ten": "6-4"
+      },
+      "away_recent_form": {
+        "streak_code": "L2",
+        "last_ten": "5-5"
+      },
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Texas Rangers by about 10.1 points more than the sportsbook price implies. Sonny Gray carries a 3.46 FIP this season with a 2.76 ERA that's basically in line with it - no real luck gap either way. Tyler Alexander carries a 3.01 FIP this season with a 3.38 ERA that's basically in line with it - no real luck gap either way. Worth flagging: only 4 starts / 66 innings this season - a small sample that can swing a lot with the next outing. Bullpens are close (3.17 vs 3.44 ERA) - not a real separator here. Globe Life Field plays as a hitter-friendly park (factor 104), inflating scoring for both sides a bit. On the season, Boston Red Sox has clearly outscored its competition more (Boston Red Sox +82 vs Texas Rangers -38 run differential). Away is on a L2 (5-5 last 10); Home is on a W4 (6-4 last 10)."
+    },
+    {
+      "game_pk": 823334,
+      "status": "Scheduled",
+      "abstract_state": "Preview",
+      "away_team": "Milwaukee Brewers",
+      "home_team": "Pittsburgh Pirates",
+      "away_score": null,
+      "home_score": null,
+      "away_record": {
+        "wins": 95,
+        "losses": 57,
+        "ties": 0,
+        "pct": ".625"
+      },
+      "home_record": {
+        "wins": 75,
+        "losses": 77,
+        "ties": 0,
+        "pct": ".493"
+      },
+      "venue_name": "PNC Park",
+      "park_factor": 95,
+      "home_starter": {
+        "name": "Wilber Dotel",
+        "fip": 2.99,
+        "era": 4.84,
+        "games_started": 1,
+        "innings_pitched": 35.1,
+        "bullpen_era": 3.68
+      },
+      "away_starter": {
+        "name": "Kyle Harrison",
+        "fip": 4.03,
+        "era": 3.98,
+        "games_started": 23,
+        "innings_pitched": 110.2,
+        "bullpen_era": 3.01
+      },
+      "home_model_prob_season_only": 0.4218,
+      "away_model_prob_season_only": 0.5782,
+      "home_model_prob": 0.5217,
+      "away_model_prob": 0.4783,
+      "home_market_prob": 0.4348,
+      "away_market_prob": 0.5652,
+      "home_market_ml": 122,
+      "away_market_ml": -142,
+      "home_model_ml": -109,
+      "away_model_ml": 109,
+      "home_edge": 0.0869,
+      "away_edge": -0.0869,
+      "home_movement": -0.0186,
+      "home_opening_ml": 121,
+      "away_opening_ml": -121,
+      "num_books": 9,
+      "home_run_diff": 21,
+      "away_run_diff": 200,
+      "home_projected_runs": 3.97,
+      "away_projected_runs": 4.02,
+      "projected_run_diff": -0.05,
+      "nrfi": {
+        "nrfi_prob": 0.6253,
+        "yrfi_prob": 0.3747,
+        "home_starter_1st_rate": 0.0,
+        "away_starter_1st_rate": 0.435,
+        "home_starter_1st_starts": 1,
+        "away_starter_1st_starts": 23,
+        "home_order_adj": 1.0,
+        "away_order_adj": 1.0,
+        "away_lineup_obp": null,
+        "home_lineup_obp": null,
+        "home_starter_rest_days": 6,
+        "away_starter_rest_days": 11,
+        "lineup_posted": false
+      },
+      "home_recent_form": {
+        "streak_code": "L2",
         "last_ten": "5-5"
       },
       "away_recent_form": {
-        "streak_code": "L1",
-        "last_ten": "6-4"
+        "streak_code": "W2",
+        "last_ten": "7-3"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Texas Rangers by about 11.7 points more than the sportsbook price implies. Sonny Gray carries a 3.46 FIP this season with a 2.76 ERA that's basically in line with it - no real luck gap either way. home starter hasn't been announced yet, so that side uses a league-average pitching fallback (~4.20 ERA/FIP) rather than a guess. The home bullpen is the sharper of the two (3.13 away vs 3.44 home ERA) - a real, if secondary, factor. Globe Life Field plays as a hitter-friendly park (factor 104), inflating scoring for both sides a bit. On the season, Boston Red Sox has clearly outscored its competition more (Boston Red Sox +86 vs Texas Rangers -42 run differential). Away is on a L1 (6-4 last 10); Home is on a W3 (5-5 last 10). Put together, today's specific matchup projects Boston Red Sox to outscore its opponent by about 0.4 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Pittsburgh Pirates by about 8.7 points more than the sportsbook price implies. Kyle Harrison carries a 4.03 FIP this season with a 3.98 ERA that's basically in line with it - no real luck gap either way. Wilber Dotel carries a 2.99 FIP this season against a 4.84 ERA - a 1.85-run gap suggests he's been unlucky (or hurt by defense/bullpen) relative to what he actually controls (strikeouts, walks, homers). Worth flagging: only 1 starts / 35 innings this season - a small sample that can swing a lot with the next outing. The home bullpen is the sharper of the two (3.01 away vs 3.68 home ERA) - a real, if secondary, factor. PNC Park plays as a pitcher-friendly park (factor 95), suppressing scoring for both sides a bit. On the season, Milwaukee Brewers has clearly outscored its competition more (Milwaukee Brewers +200 vs Pittsburgh Pirates +21 run differential). Away is on a W2 (7-3 last 10); Home is on a L2 (5-5 last 10). Put together, today's specific matchup projects Milwaukee Brewers to outscore its opponent by about 0.1 runs."
     },
     {
       "game_pk": 823978,
@@ -103,9 +188,9 @@
       },
       "home_record": {
         "wins": 58,
-        "losses": 93,
+        "losses": 94,
         "ties": 0,
-        "pct": ".384"
+        "pct": ".382"
       },
       "venue_name": "Angel Stadium",
       "park_factor": 97,
@@ -125,27 +210,27 @@
         "innings_pitched": 165.1,
         "bullpen_era": 4.11
       },
-      "home_model_prob_season_only": 0.5343,
-      "away_model_prob_season_only": 0.4657,
-      "home_model_prob": 0.5368,
-      "away_model_prob": 0.4632,
-      "home_market_prob": 0.4494,
-      "away_market_prob": 0.5506,
-      "home_market_ml": 113,
-      "away_market_ml": -135,
-      "home_model_ml": -116,
-      "away_model_ml": 116,
-      "home_edge": 0.0874,
-      "away_edge": -0.0874,
-      "home_movement": 0.0,
+      "home_model_prob_season_only": 0.5312,
+      "away_model_prob_season_only": 0.4688,
+      "home_model_prob": 0.5301,
+      "away_model_prob": 0.4699,
+      "home_market_prob": 0.4554,
+      "away_market_prob": 0.5446,
+      "home_market_ml": 112,
+      "away_market_ml": -130,
+      "home_model_ml": -113,
+      "away_model_ml": 113,
+      "home_edge": 0.0747,
+      "away_edge": -0.0747,
+      "home_movement": 0.006,
       "home_opening_ml": 123,
       "away_opening_ml": -123,
-      "num_books": 4,
-      "home_run_diff": -73,
+      "num_books": 9,
+      "home_run_diff": -78,
       "away_run_diff": -73,
-      "home_projected_runs": 3.93,
+      "home_projected_runs": 3.92,
       "away_projected_runs": 4.06,
-      "projected_run_diff": -0.13,
+      "projected_run_diff": -0.14,
       "nrfi": {
         "nrfi_prob": 0.4299,
         "yrfi_prob": 0.5701,
@@ -162,15 +247,15 @@
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "W2",
-        "last_ten": "5-5"
+        "streak_code": "L1",
+        "last_ten": "4-6"
       },
       "away_recent_form": {
         "streak_code": "W1",
         "last_ten": "3-7"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Los Angeles Angels by about 8.7 points more than the sportsbook price implies. Taj Bradley carries a 3.99 FIP this season with a 3.81 ERA that's basically in line with it - no real luck gap either way. Walbert Ure\u00f1a carries a 3.68 FIP this season against a 2.88 ERA - a 0.80-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). Bullpens are close (4.11 vs 3.99 ERA) - not a real separator here. Angel Stadium plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. Season run differential is close between the two (Minnesota Twins -73, Los Angeles Angels -73) - this game looks more like a coin flip on the season-long picture alone. Away is on a W1 (3-7 last 10); Home is on a W2 (5-5 last 10). Put together, today's specific matchup projects Minnesota Twins to outscore its opponent by about 0.1 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Los Angeles Angels by about 7.5 points more than the sportsbook price implies. Taj Bradley carries a 3.99 FIP this season with a 3.81 ERA that's basically in line with it - no real luck gap either way. Walbert Ure\u00f1a carries a 3.68 FIP this season against a 2.88 ERA - a 0.80-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). Bullpens are close (4.11 vs 3.99 ERA) - not a real separator here. Angel Stadium plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. Season run differential is close between the two (Minnesota Twins -73, Los Angeles Angels -78) - this game looks more like a coin flip on the season-long picture alone. Away is on a W1 (3-7 last 10); Home is on a L1 (4-6 last 10). Put together, today's specific matchup projects Minnesota Twins to outscore its opponent by about 0.1 runs."
     },
     {
       "game_pk": 824305,
@@ -181,16 +266,16 @@
       "away_score": null,
       "home_score": null,
       "away_record": {
-        "wins": 82,
+        "wins": 83,
         "losses": 69,
         "ties": 0,
-        "pct": ".543"
+        "pct": ".546"
       },
       "home_record": {
         "wins": 56,
-        "losses": 95,
+        "losses": 96,
         "ties": 0,
-        "pct": ".371"
+        "pct": ".368"
       },
       "venue_name": "Coors Field",
       "park_factor": 114,
@@ -200,7 +285,7 @@
         "era": 5.55,
         "games_started": 10,
         "innings_pitched": 97.1,
-        "bullpen_era": 5.25
+        "bullpen_era": 5.26
       },
       "away_starter": {
         "name": "Michael King",
@@ -208,29 +293,29 @@
         "era": 3.03,
         "games_started": 30,
         "innings_pitched": 175.0,
-        "bullpen_era": 2.91
+        "bullpen_era": 2.89
       },
-      "home_model_prob_season_only": 0.4346,
-      "away_model_prob_season_only": 0.5654,
-      "home_model_prob": 0.4662,
-      "away_model_prob": 0.5338,
+      "home_model_prob_season_only": 0.4281,
+      "away_model_prob_season_only": 0.5719,
+      "home_model_prob": 0.4513,
+      "away_model_prob": 0.5487,
       "home_market_prob": 0.4055,
       "away_market_prob": 0.5945,
       "home_market_ml": 138,
       "away_market_ml": -161,
-      "home_model_ml": 114,
-      "away_model_ml": -114,
-      "home_edge": 0.0607,
-      "away_edge": -0.0607,
-      "home_movement": 0.0,
+      "home_model_ml": 122,
+      "away_model_ml": -122,
+      "home_edge": 0.0458,
+      "away_edge": -0.0458,
+      "home_movement": 0.0001,
       "home_opening_ml": 147,
       "away_opening_ml": -147,
-      "num_books": 7,
-      "home_run_diff": -164,
-      "away_run_diff": 17,
-      "home_projected_runs": 4.78,
-      "away_projected_runs": 5.19,
-      "projected_run_diff": -0.41,
+      "num_books": 9,
+      "home_run_diff": -170,
+      "away_run_diff": 23,
+      "home_projected_runs": 4.77,
+      "away_projected_runs": 5.21,
+      "projected_run_diff": -0.44,
       "nrfi": {
         "nrfi_prob": 0.7058,
         "yrfi_prob": 0.2942,
@@ -247,15 +332,15 @@
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "W1",
-        "last_ten": "2-8"
+        "streak_code": "L1",
+        "last_ten": "1-9"
       },
       "away_recent_form": {
-        "streak_code": "L1",
-        "last_ten": "8-2"
+        "streak_code": "W1",
+        "last_ten": "9-1"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Colorado Rockies by about 6.1 points more than the sportsbook price implies. Michael King carries a 4.23 FIP this season against a 3.03 ERA - a 1.20-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). Tanner Gordon carries a 4.46 FIP this season against a 5.55 ERA - a 1.09-run gap suggests he's been unlucky (or hurt by defense/bullpen) relative to what he actually controls (strikeouts, walks, homers). The home bullpen is the sharper of the two (2.91 away vs 5.25 home ERA) - a real, if secondary, factor. Coors Field plays as a hitter-friendly park (factor 114), inflating scoring for both sides a bit. On the season, San Diego Padres has clearly outscored its competition more (San Diego Padres +17 vs Colorado Rockies -164 run differential). Away is on a L1 (8-2 last 10); Home is on a W1 (2-8 last 10). Put together, today's specific matchup projects San Diego Padres to outscore its opponent by about 0.4 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Colorado Rockies by about 4.6 points more than the sportsbook price implies. Michael King carries a 4.23 FIP this season against a 3.03 ERA - a 1.20-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). Tanner Gordon carries a 4.46 FIP this season against a 5.55 ERA - a 1.09-run gap suggests he's been unlucky (or hurt by defense/bullpen) relative to what he actually controls (strikeouts, walks, homers). The home bullpen is the sharper of the two (2.89 away vs 5.26 home ERA) - a real, if secondary, factor. Coors Field plays as a hitter-friendly park (factor 114), inflating scoring for both sides a bit. On the season, San Diego Padres has clearly outscored its competition more (San Diego Padres +23 vs Colorado Rockies -170 run differential). Away is on a W1 (9-1 last 10); Home is on a L1 (1-9 last 10). Put together, today's specific matchup projects San Diego Padres to outscore its opponent by about 0.4 runs."
     },
     {
       "game_pk": 824548,
@@ -299,18 +384,18 @@
       "away_model_prob_season_only": 0.4915,
       "home_model_prob": 0.5045,
       "away_model_prob": 0.4955,
-      "home_market_prob": 0.5431,
-      "away_market_prob": 0.4569,
-      "home_market_ml": -131,
-      "away_market_ml": 110,
+      "home_market_prob": 0.5396,
+      "away_market_prob": 0.4604,
+      "home_market_ml": -127,
+      "away_market_ml": 109,
       "home_model_ml": -102,
       "away_model_ml": 102,
-      "home_edge": -0.0386,
-      "away_edge": 0.0386,
-      "home_movement": 0.0,
+      "home_edge": -0.0351,
+      "away_edge": 0.0351,
+      "home_movement": -0.0034,
       "home_opening_ml": -119,
       "away_opening_ml": 119,
-      "num_books": 4,
+      "num_books": 9,
       "home_run_diff": 34,
       "away_run_diff": 76,
       "home_projected_runs": 4.23,
@@ -339,93 +424,8 @@
         "streak_code": "L1",
         "last_ten": "7-3"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Detroit Tigers by about 3.9 points more than the sportsbook price implies. Framber Valdez carries a 4.17 FIP this season with a 4.01 ERA that's basically in line with it - no real luck gap either way. Erick Fedde carries a 5.13 FIP this season against a 3.97 ERA - a 1.16-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). The away bullpen is the sharper of the two (3.46 away vs 3.13 home ERA) - a real, if secondary, factor. Rate Field is close to a neutral run environment (factor 99). On the season, Detroit Tigers has clearly outscored its competition more (Detroit Tigers +76 vs Chicago White Sox +34 run differential). Away is on a L1 (7-3 last 10); Home is on a L2 (3-7 last 10). Put together, today's specific matchup projects Detroit Tigers to outscore its opponent by about 0.1 runs."
-    },
-    {
-      "game_pk": 823334,
-      "status": "Scheduled",
-      "abstract_state": "Preview",
-      "away_team": "Milwaukee Brewers",
-      "home_team": "Pittsburgh Pirates",
-      "away_score": null,
-      "home_score": null,
-      "away_record": {
-        "wins": 94,
-        "losses": 57,
-        "ties": 0,
-        "pct": ".623"
-      },
-      "home_record": {
-        "wins": 75,
-        "losses": 76,
-        "ties": 0,
-        "pct": ".497"
-      },
-      "venue_name": "PNC Park",
-      "park_factor": 95,
-      "home_starter": {
-        "name": null,
-        "fip": null,
-        "era": null,
-        "games_started": null,
-        "innings_pitched": null,
-        "bullpen_era": 3.73
-      },
-      "away_starter": {
-        "name": "Kyle Harrison",
-        "fip": 4.03,
-        "era": 3.98,
-        "games_started": 23,
-        "innings_pitched": 110.2,
-        "bullpen_era": 3.03
-      },
-      "home_model_prob_season_only": 0.4223,
-      "away_model_prob_season_only": 0.5777,
-      "home_model_prob": 0.4912,
-      "away_model_prob": 0.5088,
-      "home_market_prob": 0.4534,
-      "away_market_prob": 0.5466,
-      "home_market_ml": 112,
-      "away_market_ml": -132,
-      "home_model_ml": 104,
-      "away_model_ml": -104,
-      "home_edge": 0.0378,
-      "away_edge": -0.0378,
-      "home_movement": 0.0,
-      "home_opening_ml": 121,
-      "away_opening_ml": -121,
-      "num_books": 3,
-      "home_run_diff": 22,
-      "away_run_diff": 199,
-      "home_projected_runs": 3.97,
-      "away_projected_runs": 4.36,
-      "projected_run_diff": -0.39,
-      "nrfi": {
-        "nrfi_prob": 0.5546,
-        "yrfi_prob": 0.4454,
-        "home_starter_1st_rate": 0.12,
-        "away_starter_1st_rate": 0.435,
-        "home_starter_1st_starts": null,
-        "away_starter_1st_starts": 23,
-        "home_order_adj": 1.0,
-        "away_order_adj": 1.0,
-        "away_lineup_obp": null,
-        "home_lineup_obp": null,
-        "home_starter_rest_days": null,
-        "away_starter_rest_days": 11,
-        "lineup_posted": false
-      },
-      "home_recent_form": {
-        "streak_code": "L1",
-        "last_ten": "6-4"
-      },
-      "away_recent_form": {
-        "streak_code": "W1",
-        "last_ten": "7-3"
-      },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Pittsburgh Pirates by about 3.8 points more than the sportsbook price implies. Kyle Harrison carries a 4.03 FIP this season with a 3.98 ERA that's basically in line with it - no real luck gap either way. home starter hasn't been announced yet, so that side uses a league-average pitching fallback (~4.20 ERA/FIP) rather than a guess. The home bullpen is the sharper of the two (3.03 away vs 3.73 home ERA) - a real, if secondary, factor. PNC Park plays as a pitcher-friendly park (factor 95), suppressing scoring for both sides a bit. On the season, Milwaukee Brewers has clearly outscored its competition more (Milwaukee Brewers +199 vs Pittsburgh Pirates +22 run differential). Away is on a W1 (7-3 last 10); Home is on a L1 (6-4 last 10). Put together, today's specific matchup projects Milwaukee Brewers to outscore its opponent by about 0.4 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Detroit Tigers by about 3.5 points more than the sportsbook price implies. Framber Valdez carries a 4.17 FIP this season with a 4.01 ERA that's basically in line with it - no real luck gap either way. Erick Fedde carries a 5.13 FIP this season against a 3.97 ERA - a 1.16-run gap suggests he's gotten some help from luck, defense, or sequencing relative to what he actually controls (strikeouts, walks, homers). The away bullpen is the sharper of the two (3.46 away vs 3.13 home ERA) - a real, if secondary, factor. Rate Field is close to a neutral run environment (factor 99). On the season, Detroit Tigers has clearly outscored its competition more (Detroit Tigers +76 vs Chicago White Sox +34 run differential). Away is on a L1 (7-3 last 10); Home is on a L2 (3-7 last 10). Put together, today's specific matchup projects Detroit Tigers to outscore its opponent by about 0.1 runs."
     },
     {
       "game_pk": 822924,
@@ -437,15 +437,15 @@
       "home_score": null,
       "away_record": {
         "wins": 61,
-        "losses": 90,
+        "losses": 91,
         "ties": 0,
-        "pct": ".404"
+        "pct": ".401"
       },
       "home_record": {
-        "wins": 91,
+        "wins": 92,
         "losses": 59,
         "ties": 0,
-        "pct": ".607"
+        "pct": ".609"
       },
       "venue_name": "Tropicana Field",
       "park_factor": 97,
@@ -455,7 +455,7 @@
         "era": 2.81,
         "games_started": 28,
         "innings_pitched": 160.1,
-        "bullpen_era": 3.8
+        "bullpen_era": 3.79
       },
       "away_starter": {
         "name": "Jeffrey Springs",
@@ -463,28 +463,28 @@
         "era": 5.93,
         "games_started": 27,
         "innings_pitched": 135.0,
-        "bullpen_era": 4.56
+        "bullpen_era": 4.55
       },
-      "home_model_prob_season_only": 0.7065,
-      "away_model_prob_season_only": 0.2935,
-      "home_model_prob": 0.6708,
-      "away_model_prob": 0.3292,
-      "home_market_prob": 0.7079,
-      "away_market_prob": 0.2921,
+      "home_model_prob_season_only": 0.7069,
+      "away_model_prob_season_only": 0.2931,
+      "home_model_prob": 0.6773,
+      "away_model_prob": 0.3227,
+      "home_market_prob": 0.7073,
+      "away_market_prob": 0.2927,
       "home_market_ml": -276,
-      "away_market_ml": 230,
-      "home_model_ml": -204,
-      "away_model_ml": 204,
-      "home_edge": -0.0371,
-      "away_edge": 0.0371,
-      "home_movement": 0.0,
+      "away_market_ml": 229,
+      "home_model_ml": -210,
+      "away_model_ml": 210,
+      "home_edge": -0.03,
+      "away_edge": 0.03,
+      "home_movement": -0.0006,
       "home_opening_ml": -242,
       "away_opening_ml": 242,
-      "num_books": 8,
-      "home_run_diff": 70,
-      "away_run_diff": -204,
-      "home_projected_runs": 4.82,
-      "away_projected_runs": 3.7,
+      "num_books": 9,
+      "home_run_diff": 71,
+      "away_run_diff": -205,
+      "home_projected_runs": 4.81,
+      "away_projected_runs": 3.69,
       "projected_run_diff": 1.12,
       "nrfi": {
         "nrfi_prob": 0.2981,
@@ -502,15 +502,100 @@
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "W4",
+        "streak_code": "W5",
         "last_ten": "8-2"
       },
       "away_recent_form": {
-        "streak_code": "L1",
-        "last_ten": "6-4"
+        "streak_code": "L2",
+        "last_ten": "5-5"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Athletics by about 3.7 points more than the sportsbook price implies. Jeffrey Springs carries a 5.99 FIP this season with a 5.93 ERA that's basically in line with it - no real luck gap either way. Drew Rasmussen carries a 2.88 FIP this season with a 2.81 ERA that's basically in line with it - no real luck gap either way. The away bullpen is the sharper of the two (4.56 away vs 3.80 home ERA) - a real, if secondary, factor. Tropicana Field plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. On the season, Tampa Bay Rays has clearly outscored its competition more (Athletics -204 vs Tampa Bay Rays +70 run differential). Away is on a L1 (6-4 last 10); Home is on a W4 (8-2 last 10). Put together, today's specific matchup projects Tampa Bay Rays to outscore its opponent by about 1.1 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Athletics by about 3.0 points more than the sportsbook price implies. Jeffrey Springs carries a 5.99 FIP this season with a 5.93 ERA that's basically in line with it - no real luck gap either way. Drew Rasmussen carries a 2.88 FIP this season with a 2.81 ERA that's basically in line with it - no real luck gap either way. The away bullpen is the sharper of the two (4.55 away vs 3.79 home ERA) - a real, if secondary, factor. Tropicana Field plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. On the season, Tampa Bay Rays has clearly outscored its competition more (Athletics -205 vs Tampa Bay Rays +71 run differential). Away is on a L2 (5-5 last 10); Home is on a W5 (8-2 last 10). Put together, today's specific matchup projects Tampa Bay Rays to outscore its opponent by about 1.1 runs."
+    },
+    {
+      "game_pk": 824464,
+      "status": "Scheduled",
+      "abstract_state": "Preview",
+      "away_team": "Los Angeles Dodgers",
+      "home_team": "Cincinnati Reds",
+      "away_score": null,
+      "home_score": null,
+      "away_record": {
+        "wins": 92,
+        "losses": 60,
+        "ties": 0,
+        "pct": ".605"
+      },
+      "home_record": {
+        "wins": 71,
+        "losses": 81,
+        "ties": 0,
+        "pct": ".467"
+      },
+      "venue_name": "Great American Ball Park",
+      "park_factor": 106,
+      "home_starter": {
+        "name": "Brady Singer",
+        "fip": 5.41,
+        "era": 5.38,
+        "games_started": 29,
+        "innings_pitched": 150.2,
+        "bullpen_era": 4.1
+      },
+      "away_starter": {
+        "name": "Justin Wrobleski",
+        "fip": 4.29,
+        "era": 3.78,
+        "games_started": 21,
+        "innings_pitched": 133.1,
+        "bullpen_era": 3.38
+      },
+      "home_model_prob_season_only": 0.3363,
+      "away_model_prob_season_only": 0.6637,
+      "home_model_prob": 0.4277,
+      "away_model_prob": 0.5723,
+      "home_market_prob": 0.3996,
+      "away_market_prob": 0.6004,
+      "home_market_ml": 141,
+      "away_market_ml": -165,
+      "home_model_ml": 134,
+      "away_model_ml": -134,
+      "home_edge": 0.0281,
+      "away_edge": -0.0281,
+      "home_movement": 0.0026,
+      "home_opening_ml": 152,
+      "away_opening_ml": -152,
+      "num_books": 9,
+      "home_run_diff": -148,
+      "away_run_diff": 173,
+      "home_projected_runs": 4.27,
+      "away_projected_runs": 5.19,
+      "projected_run_diff": -0.92,
+      "nrfi": {
+        "nrfi_prob": 0.2707,
+        "yrfi_prob": 0.7293,
+        "home_starter_1st_rate": 0.69,
+        "away_starter_1st_rate": 0.571,
+        "home_starter_1st_starts": 29,
+        "away_starter_1st_starts": 21,
+        "home_order_adj": 1.0,
+        "away_order_adj": 1.0,
+        "away_lineup_obp": null,
+        "home_lineup_obp": null,
+        "home_starter_rest_days": 5,
+        "away_starter_rest_days": 11,
+        "lineup_posted": false
+      },
+      "home_recent_form": {
+        "streak_code": "W1",
+        "last_ten": "3-7"
+      },
+      "away_recent_form": {
+        "streak_code": "L1",
+        "last_ten": "7-3"
+      },
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Cincinnati Reds by about 2.8 points more than the sportsbook price implies. Justin Wrobleski carries a 4.29 FIP this season with a 3.78 ERA that's basically in line with it - no real luck gap either way. Brady Singer carries a 5.41 FIP this season with a 5.38 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (3.38 away vs 4.10 home ERA) - a real, if secondary, factor. Great American Ball Park plays as a hitter-friendly park (factor 106), inflating scoring for both sides a bit. On the season, Los Angeles Dodgers has clearly outscored its competition more (Los Angeles Dodgers +173 vs Cincinnati Reds -148 run differential). Away is on a L1 (7-3 last 10); Home is on a W1 (3-7 last 10). Put together, today's specific matchup projects Los Angeles Dodgers to outscore its opponent by about 0.9 runs."
     },
     {
       "game_pk": 823573,
@@ -521,16 +606,16 @@
       "away_score": null,
       "home_score": null,
       "away_record": {
-        "wins": 83,
+        "wins": 84,
         "losses": 68,
         "ties": 0,
-        "pct": ".550"
+        "pct": ".553"
       },
       "home_record": {
         "wins": 69,
-        "losses": 82,
+        "losses": 83,
         "ties": 0,
-        "pct": ".457"
+        "pct": ".454"
       },
       "venue_name": "Citi Field",
       "park_factor": 93,
@@ -540,7 +625,7 @@
         "era": 3.24,
         "games_started": 29,
         "innings_pitched": 166.2,
-        "bullpen_era": 5.18
+        "bullpen_era": 5.15
       },
       "away_starter": {
         "name": "Aaron Nola",
@@ -548,28 +633,28 @@
         "era": 4.69,
         "games_started": 30,
         "innings_pitched": 161.1,
-        "bullpen_era": 3.83
+        "bullpen_era": 3.81
       },
-      "home_model_prob_season_only": 0.4955,
-      "away_model_prob_season_only": 0.5045,
-      "home_model_prob": 0.5407,
-      "away_model_prob": 0.4593,
-      "home_market_prob": 0.5633,
-      "away_market_prob": 0.4367,
-      "home_market_ml": -143,
-      "away_market_ml": 119,
+      "home_model_prob_season_only": 0.4896,
+      "away_model_prob_season_only": 0.5104,
+      "home_model_prob": 0.5403,
+      "away_model_prob": 0.4597,
+      "home_market_prob": 0.5553,
+      "away_market_prob": 0.4447,
+      "home_market_ml": -136,
+      "away_market_ml": 117,
       "home_model_ml": -118,
       "away_model_ml": 118,
-      "home_edge": -0.0226,
-      "away_edge": 0.0226,
-      "home_movement": 0.0,
+      "home_edge": -0.015,
+      "away_edge": 0.015,
+      "home_movement": -0.008,
       "home_opening_ml": -129,
       "away_opening_ml": 129,
-      "num_books": 4,
-      "home_run_diff": -37,
-      "away_run_diff": 28,
-      "home_projected_runs": 4.05,
-      "away_projected_runs": 4.1,
+      "num_books": 8,
+      "home_run_diff": -43,
+      "away_run_diff": 31,
+      "home_projected_runs": 4.04,
+      "away_projected_runs": 4.09,
       "projected_run_diff": -0.05,
       "nrfi": {
         "nrfi_prob": 0.3865,
@@ -587,100 +672,15 @@
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "L3",
+        "streak_code": "L4",
         "last_ten": "5-5"
       },
       "away_recent_form": {
-        "streak_code": "L1",
+        "streak_code": "W1",
         "last_ten": "4-6"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Philadelphia Phillies by about 2.3 points more than the sportsbook price implies. Aaron Nola carries a 4.86 FIP this season with a 4.69 ERA that's basically in line with it - no real luck gap either way. Nolan McLean carries a 3.68 FIP this season with a 3.24 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (3.83 away vs 5.18 home ERA) - a real, if secondary, factor. Citi Field plays as a pitcher-friendly park (factor 93), suppressing scoring for both sides a bit. On the season, Philadelphia Phillies has clearly outscored its competition more (Philadelphia Phillies +28 vs New York Mets -37 run differential). Away is on a L1 (4-6 last 10); Home is on a L3 (5-5 last 10). Put together, today's specific matchup projects Philadelphia Phillies to outscore its opponent by about 0.1 runs."
-    },
-    {
-      "game_pk": 824464,
-      "status": "Scheduled",
-      "abstract_state": "Preview",
-      "away_team": "Los Angeles Dodgers",
-      "home_team": "Cincinnati Reds",
-      "away_score": null,
-      "home_score": null,
-      "away_record": {
-        "wins": 92,
-        "losses": 59,
-        "ties": 0,
-        "pct": ".609"
-      },
-      "home_record": {
-        "wins": 70,
-        "losses": 81,
-        "ties": 0,
-        "pct": ".464"
-      },
-      "venue_name": "Great American Ball Park",
-      "park_factor": 106,
-      "home_starter": {
-        "name": "Brady Singer",
-        "fip": 5.41,
-        "era": 5.38,
-        "games_started": 29,
-        "innings_pitched": 150.2,
-        "bullpen_era": 4.14
-      },
-      "away_starter": {
-        "name": null,
-        "fip": null,
-        "era": null,
-        "games_started": null,
-        "innings_pitched": null,
-        "bullpen_era": 3.34
-      },
-      "home_model_prob_season_only": 0.3308,
-      "away_model_prob_season_only": 0.6692,
-      "home_model_prob": 0.4155,
-      "away_model_prob": 0.5845,
-      "home_market_prob": 0.397,
-      "away_market_prob": 0.603,
-      "home_market_ml": 142,
-      "away_market_ml": -169,
-      "home_model_ml": 141,
-      "away_model_ml": -141,
-      "home_edge": 0.0185,
-      "away_edge": -0.0185,
-      "home_movement": 0.0,
-      "home_opening_ml": 152,
-      "away_opening_ml": -152,
-      "num_books": 4,
-      "home_run_diff": -152,
-      "away_run_diff": 177,
-      "home_projected_runs": 4.22,
-      "away_projected_runs": 5.21,
-      "projected_run_diff": -0.98,
-      "nrfi": {
-        "nrfi_prob": 0.445,
-        "yrfi_prob": 0.555,
-        "home_starter_1st_rate": 0.69,
-        "away_starter_1st_rate": 0.12,
-        "home_starter_1st_starts": 29,
-        "away_starter_1st_starts": null,
-        "home_order_adj": 1.0,
-        "away_order_adj": 1.0,
-        "away_lineup_obp": null,
-        "home_lineup_obp": null,
-        "home_starter_rest_days": 5,
-        "away_starter_rest_days": null,
-        "lineup_posted": false
-      },
-      "home_recent_form": {
-        "streak_code": "L2",
-        "last_ten": "3-7"
-      },
-      "away_recent_form": {
-        "streak_code": "W2",
-        "last_ten": "8-2"
-      },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Cincinnati Reds by about 1.8 points more than the sportsbook price implies. away starter hasn't been announced yet, so that side uses a league-average pitching fallback (~4.20 ERA/FIP) rather than a guess. Brady Singer carries a 5.41 FIP this season with a 5.38 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (3.34 away vs 4.14 home ERA) - a real, if secondary, factor. Great American Ball Park plays as a hitter-friendly park (factor 106), inflating scoring for both sides a bit. On the season, Los Angeles Dodgers has clearly outscored its competition more (Los Angeles Dodgers +177 vs Cincinnati Reds -152 run differential). Away is on a W2 (8-2 last 10); Home is on a L2 (3-7 last 10). Put together, today's specific matchup projects Los Angeles Dodgers to outscore its opponent by about 1.0 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Philadelphia Phillies by about 1.5 points more than the sportsbook price implies. Aaron Nola carries a 4.86 FIP this season with a 4.69 ERA that's basically in line with it - no real luck gap either way. Nolan McLean carries a 3.68 FIP this season with a 3.24 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (3.81 away vs 5.15 home ERA) - a real, if secondary, factor. Citi Field plays as a pitcher-friendly park (factor 93), suppressing scoring for both sides a bit. On the season, Philadelphia Phillies has clearly outscored its competition more (Philadelphia Phillies +31 vs New York Mets -43 run differential). Away is on a W1 (4-6 last 10); Home is on a L4 (5-5 last 10). Put together, today's specific matchup projects Philadelphia Phillies to outscore its opponent by about 0.1 runs."
     },
     {
       "game_pk": 824141,
@@ -691,16 +691,16 @@
       "away_score": null,
       "home_score": null,
       "away_record": {
-        "wins": 66,
+        "wins": 67,
         "losses": 85,
         "ties": 0,
-        "pct": ".437"
+        "pct": ".441"
       },
       "home_record": {
         "wins": 76,
-        "losses": 75,
+        "losses": 76,
         "ties": 0,
-        "pct": ".503"
+        "pct": ".500"
       },
       "venue_name": "Daikin Park",
       "park_factor": 102,
@@ -710,7 +710,7 @@
         "era": null,
         "games_started": null,
         "innings_pitched": null,
-        "bullpen_era": 3.76
+        "bullpen_era": 3.78
       },
       "away_starter": {
         "name": "Seth Lugo",
@@ -718,29 +718,29 @@
         "era": 4.99,
         "games_started": 30,
         "innings_pitched": 164.0,
-        "bullpen_era": 4.46
+        "bullpen_era": 4.43
       },
-      "home_model_prob_season_only": 0.5709,
-      "away_model_prob_season_only": 0.4291,
-      "home_model_prob": 0.5745,
-      "away_model_prob": 0.4255,
-      "home_market_prob": 0.5743,
-      "away_market_prob": 0.4257,
-      "home_market_ml": -149,
-      "away_market_ml": 126,
-      "home_model_ml": -135,
-      "away_model_ml": 135,
-      "home_edge": 0.0002,
-      "away_edge": -0.0002,
-      "home_movement": 0.0,
+      "home_model_prob_season_only": 0.5667,
+      "away_model_prob_season_only": 0.4333,
+      "home_model_prob": 0.5601,
+      "away_model_prob": 0.4399,
+      "home_market_prob": 0.5733,
+      "away_market_prob": 0.4267,
+      "home_market_ml": -148,
+      "away_market_ml": 125,
+      "home_model_ml": -127,
+      "away_model_ml": 127,
+      "home_edge": -0.0132,
+      "away_edge": 0.0132,
+      "home_movement": -0.001,
       "home_opening_ml": -135,
       "away_opening_ml": 135,
-      "num_books": 3,
-      "home_run_diff": -51,
-      "away_run_diff": -96,
-      "home_projected_runs": 4.46,
-      "away_projected_runs": 4.19,
-      "projected_run_diff": 0.27,
+      "num_books": 6,
+      "home_run_diff": -54,
+      "away_run_diff": -93,
+      "home_projected_runs": 4.45,
+      "away_projected_runs": 4.2,
+      "projected_run_diff": 0.25,
       "nrfi": {
         "nrfi_prob": 0.3728,
         "yrfi_prob": 0.6272,
@@ -757,15 +757,15 @@
         "lineup_posted": false
       },
       "home_recent_form": {
+        "streak_code": "L1",
+        "last_ten": "3-7"
+      },
+      "away_recent_form": {
         "streak_code": "W1",
         "last_ten": "4-6"
       },
-      "away_recent_form": {
-        "streak_code": "L3",
-        "last_ten": "3-7"
-      },
-      "num_snapshots_today": 1,
-      "writeup": "The model is essentially in agreement with the sportsbook price here - no meaningful edge either way. Seth Lugo carries a 4.17 FIP this season against a 4.99 ERA - a 0.82-run gap suggests he's been unlucky (or hurt by defense/bullpen) relative to what he actually controls (strikeouts, walks, homers). home starter hasn't been announced yet, so that side uses a league-average pitching fallback (~4.20 ERA/FIP) rather than a guess. The away bullpen is the sharper of the two (4.46 away vs 3.76 home ERA) - a real, if secondary, factor. Daikin Park is close to a neutral run environment (factor 102). On the season, Houston Astros has clearly outscored its competition more (Kansas City Royals -96 vs Houston Astros -51 run differential). Away is on a L3 (3-7 last 10); Home is on a W1 (4-6 last 10). Put together, today's specific matchup projects Houston Astros to outscore its opponent by about 0.3 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Kansas City Royals by about 1.3 points more than the sportsbook price implies. Seth Lugo carries a 4.17 FIP this season against a 4.99 ERA - a 0.82-run gap suggests he's been unlucky (or hurt by defense/bullpen) relative to what he actually controls (strikeouts, walks, homers). home starter hasn't been announced yet, so that side uses a league-average pitching fallback (~4.20 ERA/FIP) rather than a guess. The away bullpen is the sharper of the two (4.43 away vs 3.78 home ERA) - a real, if secondary, factor. Daikin Park is close to a neutral run environment (factor 102). On the season, Houston Astros has clearly outscored its competition more (Kansas City Royals -93 vs Houston Astros -54 run differential). Away is on a W1 (4-6 last 10); Home is on a L1 (3-7 last 10). Put together, today's specific matchup projects Houston Astros to outscore its opponent by about 0.2 runs."
     }
   ],
   "odds_available": true,
