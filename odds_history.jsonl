@@ -2752,3 +2752,5 @@
 {"logged_at": "2026-09-20T20:40:59.848569", "game_date": "2026-09-20", "game_pk": 823247, "home_team": "San Diego Padres", "away_team": "Miami Marlins", "home_prob": 0.7800032740377011, "away_prob": 0.21999672596229894}
 {"logged_at": "2026-09-20T20:41:01.548675", "game_date": "2026-09-20", "game_pk": 825028, "home_team": "Arizona Diamondbacks", "away_team": "New York Yankees", "home_prob": 0.6657798092061822, "away_prob": 0.334220190793818}
 {"logged_at": "2026-09-20T20:41:03.604607", "game_date": "2026-09-20", "game_pk": 824789, "home_team": "Baltimore Orioles", "away_team": "Milwaukee Brewers", "home_prob": 0.35149818209585654, "away_prob": 0.6485018179041434}
+{"logged_at": "2026-09-20T23:08:52.676278", "game_date": "2026-09-20", "game_pk": 824546, "home_team": "Chicago White Sox", "away_team": "Detroit Tigers", "home_prob": 0.6977058107173596, "away_prob": 0.3022941892826404}
+{"logged_at": "2026-09-20T23:09:04.453952", "game_date": "2026-09-20", "game_pk": 824789, "home_team": "Baltimore Orioles", "away_team": "Milwaukee Brewers", "home_prob": 0.34608849841733025, "away_prob": 0.6539115015826698}
