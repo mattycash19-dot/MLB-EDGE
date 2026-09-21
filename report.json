@@ -1,6 +1,6 @@
 {
   "date": "2026-09-21",
-  "generated_at": "2026-09-21T01:30:01.777250",
+  "generated_at": "2026-09-21T07:04:11.401844",
   "games": [
     {
       "game_pk": 824787,
@@ -18,9 +18,9 @@
       },
       "home_record": {
         "wins": 75,
-        "losses": 80,
+        "losses": 81,
         "ties": 0,
-        "pct": ".484"
+        "pct": ".481"
       },
       "venue_name": "Oriole Park at Camden Yards",
       "park_factor": 97,
@@ -30,7 +30,7 @@
         "era": 4.11,
         "games_started": 30,
         "innings_pitched": 173.0,
-        "bullpen_era": 3.65
+        "bullpen_era": 3.63
       },
       "away_starter": {
         "name": "Trey Yesavage",
@@ -40,27 +40,27 @@
         "innings_pitched": 93.2,
         "bullpen_era": 2.93
       },
-      "home_model_prob_season_only": 0.5514,
-      "away_model_prob_season_only": 0.4486,
-      "home_model_prob": 0.5692,
-      "away_model_prob": 0.4308,
-      "home_market_prob": 0.5033,
-      "away_market_prob": 0.4967,
-      "home_market_ml": -109,
+      "home_model_prob_season_only": 0.5495,
+      "away_model_prob_season_only": 0.4505,
+      "home_model_prob": 0.5681,
+      "away_model_prob": 0.4319,
+      "home_market_prob": 0.5042,
+      "away_market_prob": 0.4958,
+      "home_market_ml": -110,
       "away_market_ml": -106,
       "home_model_ml": -132,
       "away_model_ml": 132,
-      "home_edge": 0.0659,
-      "away_edge": -0.0659,
-      "home_movement": 0.0,
+      "home_edge": 0.0639,
+      "away_edge": -0.0639,
+      "home_movement": 0.0009,
       "home_opening_ml": -101,
       "away_opening_ml": 101,
       "num_books": 9,
-      "home_run_diff": -28,
+      "home_run_diff": -31,
       "away_run_diff": -42,
-      "home_projected_runs": 3.91,
-      "away_projected_runs": 3.72,
-      "projected_run_diff": 0.19,
+      "home_projected_runs": 3.9,
+      "away_projected_runs": 3.71,
+      "projected_run_diff": 0.18,
       "nrfi": {
         "nrfi_prob": 0.3606,
         "yrfi_prob": 0.6394,
@@ -77,15 +77,15 @@
         "lineup_posted": false
       },
       "home_recent_form": {
-        "streak_code": "L2",
+        "streak_code": "L3",
         "last_ten": "5-5"
       },
       "away_recent_form": {
         "streak_code": "W1",
         "last_ten": "4-6"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Baltimore Orioles by about 6.6 points more than the sportsbook price implies. Trey Yesavage carries a 4.09 FIP this season with a 3.65 ERA that's basically in line with it - no real luck gap either way. Shane Baz carries a 3.61 FIP this season with a 4.11 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (2.93 away vs 3.65 home ERA) - a real, if secondary, factor. Oriole Park at Camden Yards plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. On the season, Baltimore Orioles has clearly outscored its competition more (Toronto Blue Jays -42 vs Baltimore Orioles -28 run differential). Away is on a W1 (4-6 last 10); Home is on a L2 (5-5 last 10). Put together, today's specific matchup projects Baltimore Orioles to outscore its opponent by about 0.2 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Baltimore Orioles by about 6.4 points more than the sportsbook price implies. Trey Yesavage carries a 4.09 FIP this season with a 3.65 ERA that's basically in line with it - no real luck gap either way. Shane Baz carries a 3.61 FIP this season with a 4.11 ERA that's basically in line with it - no real luck gap either way. The home bullpen is the sharper of the two (2.93 away vs 3.63 home ERA) - a real, if secondary, factor. Oriole Park at Camden Yards plays as a pitcher-friendly park (factor 97), suppressing scoring for both sides a bit. On the season, Baltimore Orioles has clearly outscored its competition more (Toronto Blue Jays -42 vs Baltimore Orioles -31 run differential). Away is on a W1 (4-6 last 10); Home is on a L3 (5-5 last 10). Put together, today's specific matchup projects Baltimore Orioles to outscore its opponent by about 0.2 runs."
     },
     {
       "game_pk": 824221,
@@ -129,18 +129,18 @@
       "away_model_prob_season_only": 0.4201,
       "home_model_prob": 0.5274,
       "away_model_prob": 0.4726,
-      "home_market_prob": 0.5801,
-      "away_market_prob": 0.4199,
-      "home_market_ml": -151,
-      "away_market_ml": 130,
+      "home_market_prob": 0.5821,
+      "away_market_prob": 0.4179,
+      "home_market_ml": -153,
+      "away_market_ml": 131,
       "home_model_ml": -112,
       "away_model_ml": 112,
-      "home_edge": -0.0527,
-      "away_edge": 0.0527,
-      "home_movement": 0.0,
+      "home_edge": -0.0547,
+      "away_edge": 0.0547,
+      "home_movement": 0.002,
       "home_opening_ml": -138,
       "away_opening_ml": 138,
-      "num_books": 8,
+      "num_books": 9,
       "home_run_diff": 68,
       "away_run_diff": 12,
       "home_projected_runs": 4.35,
@@ -169,8 +169,8 @@
         "streak_code": "L1",
         "last_ten": "6-4"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes Washington Nationals by about 5.3 points more than the sportsbook price implies. DJ Herz (away starter) doesn't have a usable season pitching line yet, so this side falls back to league-average pitching. River Ryan (home starter) doesn't have a usable season pitching line yet, so this side falls back to league-average pitching. The away bullpen is the sharper of the two (4.27 away vs 3.33 home ERA) - a real, if secondary, factor. Comerica Park is close to a neutral run environment (factor 100). On the season, Detroit Tigers has clearly outscored its competition more (Washington Nationals +12 vs Detroit Tigers +68 run differential). Away is on a L1 (6-4 last 10); Home is on a L2 (6-4 last 10). Put together, today's specific matchup projects Washington Nationals to outscore its opponent by about 0.1 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes Washington Nationals by about 5.5 points more than the sportsbook price implies. DJ Herz (away starter) doesn't have a usable season pitching line yet, so this side falls back to league-average pitching. River Ryan (home starter) doesn't have a usable season pitching line yet, so this side falls back to league-average pitching. The away bullpen is the sharper of the two (4.27 away vs 3.33 home ERA) - a real, if secondary, factor. Comerica Park is close to a neutral run environment (factor 100). On the season, Detroit Tigers has clearly outscored its competition more (Washington Nationals +12 vs Detroit Tigers +68 run differential). Away is on a L1 (6-4 last 10); Home is on a L2 (6-4 last 10). Put together, today's specific matchup projects Washington Nationals to outscore its opponent by about 0.1 runs."
     },
     {
       "game_pk": 823169,
@@ -214,18 +214,18 @@
       "away_model_prob_season_only": 0.4757,
       "home_model_prob": 0.5143,
       "away_model_prob": 0.4857,
-      "home_market_prob": 0.4826,
-      "away_market_prob": 0.5174,
-      "home_market_ml": -100,
-      "away_market_ml": -116,
+      "home_market_prob": 0.4836,
+      "away_market_prob": 0.5164,
+      "home_market_ml": -102,
+      "away_market_ml": -117,
       "home_model_ml": -106,
       "away_model_ml": 106,
-      "home_edge": 0.0317,
-      "away_edge": -0.0317,
-      "home_movement": 0.0,
+      "home_edge": 0.0307,
+      "away_edge": -0.0307,
+      "home_movement": 0.001,
       "home_opening_ml": 107,
       "away_opening_ml": -107,
-      "num_books": 9,
+      "num_books": 6,
       "home_run_diff": -84,
       "away_run_diff": -64,
       "home_projected_runs": 3.91,
@@ -254,8 +254,8 @@
         "streak_code": "W1",
         "last_ten": "4-6"
       },
-      "num_snapshots_today": 1,
-      "writeup": "The model likes San Francisco Giants by about 3.2 points more than the sportsbook price implies. Zebby Matthews carries a 4.81 FIP this season with a 4.74 ERA that's basically in line with it - no real luck gap either way. Blade Tidwell carries a 4.76 FIP this season with a 4.56 ERA that's basically in line with it - no real luck gap either way. Bullpens are close (4.07 vs 4.20 ERA) - not a real separator here. Oracle Park plays as a pitcher-friendly park (factor 90), suppressing scoring for both sides a bit. On the season, Minnesota Twins has clearly outscored its competition more (Minnesota Twins -64 vs San Francisco Giants -84 run differential). Away is on a W1 (4-6 last 10); Home is on a L3 (3-7 last 10). Put together, today's specific matchup projects Minnesota Twins to outscore its opponent by about 0.2 runs."
+      "num_snapshots_today": 2,
+      "writeup": "The model likes San Francisco Giants by about 3.1 points more than the sportsbook price implies. Zebby Matthews carries a 4.81 FIP this season with a 4.74 ERA that's basically in line with it - no real luck gap either way. Blade Tidwell carries a 4.76 FIP this season with a 4.56 ERA that's basically in line with it - no real luck gap either way. Bullpens are close (4.07 vs 4.20 ERA) - not a real separator here. Oracle Park plays as a pitcher-friendly park (factor 90), suppressing scoring for both sides a bit. On the season, Minnesota Twins has clearly outscored its competition more (Minnesota Twins -64 vs San Francisco Giants -84 run differential). Away is on a W1 (4-6 last 10); Home is on a L3 (3-7 last 10). Put together, today's specific matchup projects Minnesota Twins to outscore its opponent by about 0.2 runs."
     }
   ],
   "odds_available": true,
