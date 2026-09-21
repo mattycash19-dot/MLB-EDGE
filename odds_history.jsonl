@@ -2760,3 +2760,6 @@
 {"logged_at": "2026-09-21T07:04:07.075402", "game_date": "2026-09-21", "game_pk": 824787, "home_team": "Baltimore Orioles", "away_team": "Toronto Blue Jays", "home_prob": 0.5041545395855688, "away_prob": 0.49584546041443134}
 {"logged_at": "2026-09-21T07:04:09.407944", "game_date": "2026-09-21", "game_pk": 824221, "home_team": "Detroit Tigers", "away_team": "Washington Nationals", "home_prob": 0.5821346050057602, "away_prob": 0.4178653949942398}
 {"logged_at": "2026-09-21T07:04:11.392597", "game_date": "2026-09-21", "game_pk": 823169, "home_team": "San Francisco Giants", "away_team": "Minnesota Twins", "home_prob": 0.48360713738027244, "away_prob": 0.5163928626197274}
+{"logged_at": "2026-09-21T14:29:14.085250", "game_date": "2026-09-21", "game_pk": 824787, "home_team": "Baltimore Orioles", "away_team": "Toronto Blue Jays", "home_prob": 0.5058086602877263, "away_prob": 0.49419133971227375}
+{"logged_at": "2026-09-21T14:29:17.162822", "game_date": "2026-09-21", "game_pk": 824221, "home_team": "Detroit Tigers", "away_team": "Washington Nationals", "home_prob": 0.5501123704804401, "away_prob": 0.4498876295195598}
+{"logged_at": "2026-09-21T14:29:20.523831", "game_date": "2026-09-21", "game_pk": 823169, "home_team": "San Francisco Giants", "away_team": "Minnesota Twins", "home_prob": 0.4796877732022662, "away_prob": 0.5203122267977338}
